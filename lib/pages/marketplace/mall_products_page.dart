@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../controllers/mall_products_controller.dart';
 import '../../data/models/mall_product_model.dart';
 import '../../utils/app_theme.dart';
@@ -110,9 +111,43 @@ class _MallProductCard extends StatelessWidget {
   const _MallProductCard({required this.product});
   final MallProductModel product;
 
+  Future<void> _openProduct(BuildContext context) async {
+    final rawUrl = product.shareableLink;
+    final uri = Uri.tryParse(rawUrl);
+    if (uri == null ||
+        (uri.scheme != 'https' && uri.scheme != 'http') ||
+        uri.host.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Product link is unavailable')),
+      );
+      return;
+    }
+
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open product link')),
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open product link')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return InkWell(
+      onTap: () => _openProduct(context),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
       decoration: BoxDecoration(
         color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(12),
@@ -217,6 +252,7 @@ class _MallProductCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
