@@ -20,6 +20,7 @@ class MallProductsController extends GetxController {
 
   Future<void> loadProducts() async {
     if (isLoading.value) return;
+    final hadProducts = products.isNotEmpty;
     isLoading.value = true;
     errorMessage.value = '';
     _currentPage = 1;
@@ -31,6 +32,7 @@ class MallProductsController extends GetxController {
       _hasMore = result.hasMore;
     } catch (error) {
       errorMessage.value = _friendlyError(error);
+      if (!hadProducts) products.clear();
     } finally {
       isLoading.value = false;
     }
