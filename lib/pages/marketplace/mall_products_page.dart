@@ -141,6 +141,7 @@ class _MallProductCard extends StatelessWidget {
                           size: 42, color: Colors.black26)
                       : CachedNetworkImage(
                           imageUrl: product.imageUrl,
+                          httpHeaders: const {'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8'},
                           fit: BoxFit.contain,
                           placeholder: (_, __) => const Center(
                             child: SizedBox(
