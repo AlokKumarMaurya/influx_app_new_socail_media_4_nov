@@ -6,6 +6,10 @@ class AppConfig {
   // Base URL for the API
   static const String baseUrl = 'https://staging.hmecompany.com/api';
 
+  // Separate customer mall catalogue API.
+  static const String mallBaseUrl = 'https://mall.hmecompany.com/api';
+  static const String mallApiKey = String.fromEnvironment('MALL_API_KEY');
+
   // Deep Linking Configuration:
   // 1. webDomain: Set your web domain without protocol (e.g. '127.0.0.1:8000', 'influx.com', or 'social.mydomain.com')
   static const String webDomain = 'influx.mhquickdev.com';
