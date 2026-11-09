@@ -78,7 +78,7 @@ class MallProductModel {
 
       // The API may return Laravel storage paths rather than full URLs.
       path = path.replaceFirst(RegExp(r'^/+'), '');
-      return '${'https://mall.hmecompany.com'}/$path';
+      return 'https://mall.hmecompany.com/$path';
     }
 
     if (value is Map) {
