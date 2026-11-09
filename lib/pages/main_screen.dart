@@ -5,6 +5,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:influx_app/config/app_config.dart';
 import 'package:influx_app/pages/auth/verify_otp.dart';
 import 'package:influx_app/pages/fan_page/jobs/all_jobs_explore_page.dart';
+import 'marketplace/mall_products_page.dart';
 import '../utils/app_theme.dart';
 import '../widgets/app_drawer.dart';
 import '../controllers/main_controller.dart';
@@ -362,6 +363,7 @@ class MainScreen extends StatelessWidget {
             onMenuTap: () => scaffoldKey.currentState?.openDrawer(),
           ),
         const FriendsPage(),
+        const MallProductsPage(),
 
         FanPagesListPage(),
         // const ProfilePage(),
@@ -397,6 +399,13 @@ class MainScreen extends StatelessWidget {
         const Tab(
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedUserMultiple,
+            color: Colors.white,
+            size: 24,
+          ),
+        ),
+        const Tab(
+          icon: HugeIcon(
+            icon: HugeIcons.strokeRoundedShoppingBag01,
             color: Colors.white,
             size: 24,
           ),
