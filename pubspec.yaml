@@ -58,7 +58,7 @@ dependencies:
   geolocator: ^13.0.2
   media_kit: ^1.2.6
   media_kit_libs_audio: ^1.0.7
-  package_info_plus: ^9.0.1
+  package_info_plus: ^10.2.1
   pinput: 6.0.2
 
 dev_dependencies:
