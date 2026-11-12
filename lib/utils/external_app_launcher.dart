@@ -4,9 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 /// External companion-app URLs. Replace each TODO with the production URL
 /// supplied for the corresponding application.
 class ExternalAppLinks {
-  static const String hamiMall = ''; // TODO: Add Hami Mall customer app URL.
-  static const String hamiBusiness = ''; // TODO: Add Hami Business vendor app URL.
-  static const String hamiMitr = ''; // TODO: Add Hami Mitr driver app URL.
+  static const String hamiMall = 'https://play.google.com/store/apps/details?id=com.hme.mall';
+  static const String hamiBusiness = 'https://play.google.com/store/apps/details?id=com.hmetv.company';
+  static const String hamiMitr = 'https://play.google.com/store/apps/details?id=com.hmetv.mitra';
 }
 
 class ExternalAppLauncher {
