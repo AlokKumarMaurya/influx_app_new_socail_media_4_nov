@@ -23,7 +23,6 @@ class NetworkInspector {
       // Alice's built-in bubble can be recreated by route changes. Use our
       // single app-root launcher instead.
       showOverlayBubble: false,
-      maxCallsCount: 1000,
       redactedHeaders: {
         'authorization', 'cookie', 'set-cookie', 'x-api-key',
       },

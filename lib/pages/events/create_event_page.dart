@@ -58,7 +58,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
       _endDate = e.endDate;
       _existingCoverUrl = e.coverImage;
       _isPaid = e.isPaid;
-      _ticketPriceController.text = e.ticketPrice > 0 ? e.ticketPrice.toStringAsFixed(2) : '';
+      _ticketPriceController.text = e.ticketPrice > 0
+          ? e.ticketPrice.toStringAsFixed(2)
+          : '';
     }
   }
 
@@ -74,7 +76,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery, maxWidth: 1200);
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1200,
+    );
     if (picked != null) {
       setState(() {
         _coverImage = File(picked.path);
@@ -83,10 +88,12 @@ class _CreateEventPageState extends State<CreateEventPage> {
   }
 
   Future<void> _pickMaterials() async {
-    final result = await FilePicker.platform.pickFiles(allowMultiple: true);
-    if (result != null && result.files.isNotEmpty) {
+    final result = await FilePicker.pickFiles(allowMultiple: true);
+    if (result.isNotEmpty) {
       setState(() {
-        _materials.addAll(result.files.where((f) => f.path != null).map((f) => File(f.path!)));
+        _materials.addAll(
+          result.where((f) => f.path != null).map((f) => File(f.path!)),
+        );
       });
     }
   }
@@ -94,13 +101,15 @@ class _CreateEventPageState extends State<CreateEventPage> {
   Future<void> _pickDateTime({required bool isStart}) async {
     final date = await showDatePicker(
       context: context,
-      initialDate: (isStart ? _startDate : _endDate) ?? DateTime.now().add(const Duration(days: 1)),
+      initialDate:
+          (isStart ? _startDate : _endDate) ??
+          DateTime.now().add(const Duration(days: 1)),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
       builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: ColorScheme.light(primary: AppColors.primary),
-        ),
+        data: Theme.of(
+          context,
+        ).copyWith(colorScheme: ColorScheme.light(primary: AppColors.primary)),
         child: child!,
       ),
     );
@@ -111,15 +120,21 @@ class _CreateEventPageState extends State<CreateEventPage> {
       context: context,
       initialTime: TimeOfDay.now(),
       builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: ColorScheme.light(primary: AppColors.primary),
-        ),
+        data: Theme.of(
+          context,
+        ).copyWith(colorScheme: ColorScheme.light(primary: AppColors.primary)),
         child: child!,
       ),
     );
     if (time == null) return;
 
-    final dateTime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    final dateTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
     setState(() {
       if (isStart) {
         _startDate = dateTime;
@@ -141,10 +156,13 @@ class _CreateEventPageState extends State<CreateEventPage> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_startDate == null) {
-      Get.snackbar('error'.tr, 'please_select_start_date'.tr,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white);
+      Get.snackbar(
+        'error'.tr,
+        'please_select_start_date'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -152,7 +170,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
         ? Get.find<EventsController>()
         : Get.put(EventsController());
 
-    final price = _isPaid ? (double.tryParse(_ticketPriceController.text.trim()) ?? 0.0) : 0.0;
+    final price = _isPaid
+        ? (double.tryParse(_ticketPriceController.text.trim()) ?? 0.0)
+        : 0.0;
 
     bool success;
     if (isEditing) {
@@ -163,7 +183,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
         category: _selectedCategory,
         startDate: _formatDateForApi(_startDate!),
         endDate: _endDate != null ? _formatDateForApi(_endDate!) : null,
-        location: _selectedType == 'in_person' ? _locationController.text.trim() : null,
+        location: _selectedType == 'in_person'
+            ? _locationController.text.trim()
+            : null,
         link: _selectedType == 'online' ? _linkController.text.trim() : null,
         description: _descriptionController.text.trim(),
         isPaid: _isPaid,
@@ -178,7 +200,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
         category: _selectedCategory,
         startDate: _formatDateForApi(_startDate!),
         endDate: _endDate != null ? _formatDateForApi(_endDate!) : null,
-        location: _selectedType == 'in_person' ? _locationController.text.trim() : null,
+        location: _selectedType == 'in_person'
+            ? _locationController.text.trim()
+            : null,
         link: _selectedType == 'online' ? _linkController.text.trim() : null,
         description: _descriptionController.text.trim(),
         isPaid: _isPaid,
@@ -192,7 +216,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
       Get.back();
       Get.snackbar(
         'success'.tr,
-        isEditing ? 'event_updated_successfully'.tr : 'event_created_successfully'.tr,
+        isEditing
+            ? 'event_updated_successfully'.tr
+            : 'event_created_successfully'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.primary,
         colorText: Colors.white,
@@ -203,7 +229,20 @@ class _CreateEventPageState extends State<CreateEventPage> {
   }
 
   String _formatDateTime(DateTime dt) {
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     final hour = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
     final ampm = dt.hour >= 12 ? 'PM' : 'AM';
     final minute = dt.minute.toString().padLeft(2, '0');
@@ -223,10 +262,17 @@ class _CreateEventPageState extends State<CreateEventPage> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01, color: AppColors.textMain, size: 24),
+          icon: HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: AppColors.textMain,
+            size: 24,
+          ),
           onPressed: () => Get.back(),
         ),
-        title: Text(isEditing ? 'edit_event'.tr : 'create_event'.tr, style: AppTextStyles.h3),
+        title: Text(
+          isEditing ? 'edit_event'.tr : 'create_event'.tr,
+          style: AppTextStyles.h3,
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -244,18 +290,26 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   decoration: BoxDecoration(
                     color: AppColors.cardBg,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.textSecondary.withValues(alpha: 0.2)),
+                    border: Border.all(
+                      color: AppColors.textSecondary.withValues(alpha: 0.2),
+                    ),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10),
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                      ),
                     ],
                     image: _coverImage != null
-                        ? DecorationImage(image: FileImage(_coverImage!), fit: BoxFit.cover)
+                        ? DecorationImage(
+                            image: FileImage(_coverImage!),
+                            fit: BoxFit.cover,
+                          )
                         : (_existingCoverUrl != null
-                            ? DecorationImage(
-                                image: NetworkImage(_existingCoverUrl!),
-                                fit: BoxFit.cover,
-                              )
-                            : null),
+                              ? DecorationImage(
+                                  image: NetworkImage(_existingCoverUrl!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null),
                   ),
                   child: (_coverImage == null && _existingCoverUrl == null)
                       ? Column(
@@ -263,13 +317,18 @@ class _CreateEventPageState extends State<CreateEventPage> {
                           children: [
                             HugeIcon(
                               icon: HugeIcons.strokeRoundedImage01,
-                              color: AppColors.textSecondary.withValues(alpha: 0.5),
+                              color: AppColors.textSecondary.withValues(
+                                alpha: 0.5,
+                              ),
                               size: 40,
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'tap_upload_cover_photo'.tr,
-                              style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 13,
+                              ),
                             ),
                           ],
                         )
@@ -285,7 +344,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
               TextFormField(
                 controller: _nameController,
                 decoration: _inputDecoration('eg_summer_music_festival'.tr),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'name_required'.tr : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'name_required'.tr : null,
               ),
 
               const SizedBox(height: 16),
@@ -303,9 +363,21 @@ class _CreateEventPageState extends State<CreateEventPage> {
                           initialValue: _selectedCategory,
                           decoration: _inputDecoration(''),
                           items: _categories
-                              .map((c) => DropdownMenuItem(value: c, child: Text(c, style: TextStyle(fontSize: 14, color: AppColors.textMain))))
+                              .map(
+                                (c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Text(
+                                    c,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.textMain,
+                                    ),
+                                  ),
+                                ),
+                              )
                               .toList(),
-                          onChanged: (v) => setState(() => _selectedCategory = v!),
+                          onChanged: (v) =>
+                              setState(() => _selectedCategory = v!),
                         ),
                       ],
                     ),
@@ -321,8 +393,26 @@ class _CreateEventPageState extends State<CreateEventPage> {
                           initialValue: _selectedType,
                           decoration: _inputDecoration(''),
                           items: [
-                            DropdownMenuItem(value: 'in_person', child: Text('in_person'.tr, style: TextStyle(fontSize: 14, color: AppColors.textMain))),
-                            DropdownMenuItem(value: 'online', child: Text('online'.tr, style: TextStyle(fontSize: 14, color: AppColors.textMain))),
+                            DropdownMenuItem(
+                              value: 'in_person',
+                              child: Text(
+                                'in_person'.tr,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textMain,
+                                ),
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'online',
+                              child: Text(
+                                'online'.tr,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textMain,
+                                ),
+                              ),
+                            ),
                           ],
                           onChanged: (v) => setState(() => _selectedType = v!),
                         ),
@@ -346,8 +436,12 @@ class _CreateEventPageState extends State<CreateEventPage> {
                       onSelected: (val) => setState(() => _isPaid = !val),
                       selectedColor: AppColors.primary.withValues(alpha: 0.15),
                       labelStyle: TextStyle(
-                        color: !_isPaid ? AppColors.primary : AppColors.textMain,
-                        fontWeight: !_isPaid ? FontWeight.bold : FontWeight.normal,
+                        color: !_isPaid
+                            ? AppColors.primary
+                            : AppColors.textMain,
+                        fontWeight: !_isPaid
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -359,8 +453,12 @@ class _CreateEventPageState extends State<CreateEventPage> {
                       onSelected: (val) => setState(() => _isPaid = val),
                       selectedColor: Colors.amber.shade100,
                       labelStyle: TextStyle(
-                        color: _isPaid ? Colors.amber.shade900 : AppColors.textMain,
-                        fontWeight: _isPaid ? FontWeight.bold : FontWeight.normal,
+                        color: _isPaid
+                            ? Colors.amber.shade900
+                            : AppColors.textMain,
+                        fontWeight: _isPaid
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -372,13 +470,17 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 const SizedBox(height: 6),
                 TextFormField(
                   controller: _ticketPriceController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   decoration: _inputDecoration('0.00'),
                   validator: (v) {
                     if (_isPaid) {
-                      if (v == null || v.trim().isEmpty) return 'price_required'.tr;
+                      if (v == null || v.trim().isEmpty)
+                        return 'price_required'.tr;
                       final p = double.tryParse(v.trim());
-                      if (p == null || p < 0) return 'enter_valid_ticket_price'.tr;
+                      if (p == null || p < 0)
+                        return 'enter_valid_ticket_price'.tr;
                     }
                     return null;
                   },
@@ -400,22 +502,37 @@ class _CreateEventPageState extends State<CreateEventPage> {
                           onTap: () => _pickDateTime(isStart: true),
                           borderRadius: BorderRadius.circular(12),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 14,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.cardBg,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.textSecondary.withValues(alpha: 0.2)),
+                              border: Border.all(
+                                color: AppColors.textSecondary.withValues(
+                                  alpha: 0.2,
+                                ),
+                              ),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.calendar_today, size: 16, color: AppColors.primary),
+                                Icon(
+                                  Icons.calendar_today,
+                                  size: 16,
+                                  color: AppColors.primary,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    _startDate != null ? _formatDateTime(_startDate!) : 'select_date'.tr,
+                                    _startDate != null
+                                        ? _formatDateTime(_startDate!)
+                                        : 'select_date'.tr,
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: _startDate != null ? AppColors.textMain : AppColors.textSecondary,
+                                      color: _startDate != null
+                                          ? AppColors.textMain
+                                          : AppColors.textSecondary,
                                     ),
                                   ),
                                 ),
@@ -437,22 +554,37 @@ class _CreateEventPageState extends State<CreateEventPage> {
                           onTap: () => _pickDateTime(isStart: false),
                           borderRadius: BorderRadius.circular(12),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 14,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.cardBg,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.textSecondary.withValues(alpha: 0.2)),
+                              border: Border.all(
+                                color: AppColors.textSecondary.withValues(
+                                  alpha: 0.2,
+                                ),
+                              ),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                                Icon(
+                                  Icons.calendar_today,
+                                  size: 16,
+                                  color: AppColors.textSecondary,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    _endDate != null ? _formatDateTime(_endDate!) : 'select_date'.tr,
+                                    _endDate != null
+                                        ? _formatDateTime(_endDate!)
+                                        : 'select_date'.tr,
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: _endDate != null ? AppColors.textMain : AppColors.textSecondary,
+                                      color: _endDate != null
+                                          ? AppColors.textMain
+                                          : AppColors.textSecondary,
                                     ),
                                   ),
                                 ),
@@ -476,7 +608,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   controller: _locationController,
                   decoration: _inputDecoration('full_address'.tr),
                   validator: (v) {
-                    if (_selectedType == 'in_person' && (v == null || v.trim().isEmpty)) {
+                    if (_selectedType == 'in_person' &&
+                        (v == null || v.trim().isEmpty)) {
                       return 'location_required_in_person'.tr;
                     }
                     return null;
@@ -492,7 +625,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   decoration: _inputDecoration('https://zoom.us/...'),
                   keyboardType: TextInputType.url,
                   validator: (v) {
-                    if (_selectedType == 'online' && (v == null || v.trim().isEmpty)) {
+                    if (_selectedType == 'online' &&
+                        (v == null || v.trim().isEmpty)) {
                       return 'link_required_online'.tr;
                     }
                     return null;
@@ -509,7 +643,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 controller: _descriptionController,
                 decoration: _inputDecoration('what_is_event_about'.tr),
                 maxLines: 4,
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'description_required'.tr : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'description_required'.tr
+                    : null,
               ),
 
               const SizedBox(height: 16),
@@ -523,8 +659,12 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 label: Text('add_document_manual'.tr),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primary,
-                  side: BorderSide(color: AppColors.primary.withValues(alpha: 0.5)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  side: BorderSide(
+                    color: AppColors.primary.withValues(alpha: 0.5),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               if (_materials.isNotEmpty) ...[
@@ -533,10 +673,21 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   children: _materials.map((m) {
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: Icon(Icons.description, color: AppColors.primary, size: 20),
-                      title: Text(m.path.split('/').last, style: const TextStyle(fontSize: 13)),
+                      leading: Icon(
+                        Icons.description,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
+                      title: Text(
+                        m.path.split('/').last,
+                        style: const TextStyle(fontSize: 13),
+                      ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.close, size: 18, color: Colors.red),
+                        icon: const Icon(
+                          Icons.close,
+                          size: 18,
+                          color: Colors.red,
+                        ),
                         onPressed: () => setState(() => _materials.remove(m)),
                       ),
                     );
@@ -547,29 +698,39 @@ class _CreateEventPageState extends State<CreateEventPage> {
               const SizedBox(height: 28),
 
               // Submit button
-              Obx(() => SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: controller.isSubmitting.value ? null : _submit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        elevation: 2,
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: controller.isSubmitting.value ? null : _submit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      child: controller.isSubmitting.value
-                          ? const SizedBox(
-                              height: 22,
-                              width: 22,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                            )
-                          : Text(
-                              isEditing ? 'save_changes'.tr : 'create_event'.tr,
-                              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                            ),
+                      elevation: 2,
                     ),
-                  )),
+                    child: controller.isSubmitting.value
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            isEditing ? 'save_changes'.tr : 'create_event'.tr,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
+                          ),
+                  ),
+                ),
+              ),
 
               const SizedBox(height: 40),
             ],
@@ -593,17 +754,24 @@ class _CreateEventPageState extends State<CreateEventPage> {
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.6), fontSize: 14),
+      hintStyle: TextStyle(
+        color: AppColors.textSecondary.withValues(alpha: 0.6),
+        fontSize: 14,
+      ),
       filled: true,
       fillColor: AppColors.cardBg,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.textSecondary.withValues(alpha: 0.2)),
+        borderSide: BorderSide(
+          color: AppColors.textSecondary.withValues(alpha: 0.2),
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.textSecondary.withValues(alpha: 0.2)),
+        borderSide: BorderSide(
+          color: AppColors.textSecondary.withValues(alpha: 0.2),
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

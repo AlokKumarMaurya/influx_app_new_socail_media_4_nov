@@ -36,7 +36,9 @@ class SupportController extends GetxController {
       final response = await _supportService.getTickets(ticketsPage);
       if (response['success']) {
         final List data = response['data'];
-        final fetchedTickets = data.map((e) => TicketModel.fromJson(e)).toList();
+        final fetchedTickets = data
+            .map((e) => TicketModel.fromJson(e))
+            .toList();
         tickets.addAll(fetchedTickets);
         hasMoreTickets.value = response['next_page_url'] != null;
         if (fetchedTickets.isNotEmpty) ticketsPage++;
@@ -55,7 +57,9 @@ class SupportController extends GetxController {
       // Backend returns full ticket data including messages
       currentTicket.value = TicketModel.fromJson(response);
       final List messagesData = response['messages'];
-      ticketMessages.value = messagesData.map((e) => TicketMessageModel.fromJson(e)).toList();
+      ticketMessages.value = messagesData
+          .map((e) => TicketMessageModel.fromJson(e))
+          .toList();
     } catch (e) {
       debugPrint('Error fetching ticket details: $e');
       Get.snackbar('error'.tr, 'failed_to_load_ticket_details'.tr);
@@ -65,15 +69,15 @@ class SupportController extends GetxController {
   }
 
   Future<void> pickFiles() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    List<PlatformFile>? result = await FilePicker.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
       allowedExtensions: ['jpg', 'png', 'pdf', 'docx', 'zip'],
     );
 
-    if (result != null) {
-      selectedFiles.addAll(result.paths.whereType<String>().map((path) => File(path)));
-    }
+    selectedFiles.addAll(
+      result.map((e) => e.path).whereType<String>().map((path) => File(path)),
+    );
   }
 
   void removeFile(int index) {

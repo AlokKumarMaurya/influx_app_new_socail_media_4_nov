@@ -31,7 +31,7 @@ class UserSettingsController extends GetxController {
   final educationController = TextEditingController();
   final websiteController = TextEditingController();
   final locationController = TextEditingController();
-  
+
   var selectedGender = Rx<String?>(null);
   var selectedBirthDate = Rx<DateTime?>(null);
 
@@ -133,7 +133,9 @@ class UserSettingsController extends GetxController {
         if (customFieldControllers.containsKey(f.name)) {
           customFieldControllers[f.name]!.text = savedVal?.toString() ?? '';
         } else {
-          customFieldControllers[f.name] = TextEditingController(text: savedVal?.toString() ?? '');
+          customFieldControllers[f.name] = TextEditingController(
+            text: savedVal?.toString() ?? '',
+          );
         }
       }
     }
@@ -142,7 +144,9 @@ class UserSettingsController extends GetxController {
   Future<void> fetchProfileCustomFields() async {
     try {
       final raw = await _settingsService.getProfileCustomFields();
-      profileCustomFields.value = raw.map((e) => ProfileCustomFieldModel.fromJson(e)).toList();
+      profileCustomFields.value = raw
+          .map((e) => ProfileCustomFieldModel.fromJson(e))
+          .toList();
       _syncCustomFieldsWithUser();
     } catch (e) {
       Get.log('Failed to fetch profile custom fields: $e');
@@ -166,7 +170,7 @@ class UserSettingsController extends GetxController {
       educationController.text = user.education ?? '';
       websiteController.text = user.website ?? '';
       locationController.text = user.location ?? '';
-      
+
       selectedGender.value = user.gender;
       selectedBirthDate.value = user.birthDate;
 
@@ -187,7 +191,9 @@ class UserSettingsController extends GetxController {
       privacyOnlineStatus.value = user.privacyOnlineStatus;
 
       if (user.profileFieldPrivacy.isNotEmpty) {
-        fieldPrivacy.assignAll(user.profileFieldPrivacy.map((k, v) => MapEntry(k, v.toString())));
+        fieldPrivacy.assignAll(
+          user.profileFieldPrivacy.map((k, v) => MapEntry(k, v.toString())),
+        );
       }
 
       _syncCustomFieldsWithUser();
@@ -220,9 +226,11 @@ class UserSettingsController extends GetxController {
       final customFieldsPayload = <String, dynamic>{};
       for (var f in profileCustomFields) {
         if (['select', 'radio'].contains(f.type)) {
-          customFieldsPayload[f.name] = customFieldSelectedOptions[f.name]?.value;
+          customFieldsPayload[f.name] =
+              customFieldSelectedOptions[f.name]?.value;
         } else if (f.type == 'checkbox') {
-          customFieldsPayload[f.name] = customFieldCheckboxOptions[f.name]?.toList();
+          customFieldsPayload[f.name] = customFieldCheckboxOptions[f.name]
+              ?.toList();
         } else {
           customFieldsPayload[f.name] = customFieldControllers[f.name]?.text;
         }
@@ -346,7 +354,9 @@ class UserSettingsController extends GetxController {
   Map<String, dynamic>? get selectedDocTypeConfig {
     if (kycDocumentTypes.isEmpty) return null;
     return kycDocumentTypes.firstWhereOrNull(
-      (dt) => dt['slug'] == selectedKycType.value || dt['id'].toString() == selectedKycType.value,
+      (dt) =>
+          dt['slug'] == selectedKycType.value ||
+          dt['id'].toString() == selectedKycType.value,
     );
   }
 
@@ -369,7 +379,8 @@ class UserSettingsController extends GetxController {
       if (data['document_types'] != null) {
         final list = List<Map<String, dynamic>>.from(data['document_types']);
         kycDocumentTypes.value = list;
-        if (list.isNotEmpty && !list.any((dt) => dt['slug'] == selectedKycType.value)) {
+        if (list.isNotEmpty &&
+            !list.any((dt) => dt['slug'] == selectedKycType.value)) {
           selectedKycType.value = list.first['slug'];
         }
       }
@@ -398,12 +409,12 @@ class UserSettingsController extends GetxController {
   }
 
   Future<void> pickDynamicFile(String key) async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf', 'webp'],
     );
-    if (result != null && result.files.single.path != null) {
-      dynamicFieldFiles[key]?.value = File(result.files.single.path!);
+    if (result.single.path != null) {
+      dynamicFieldFiles[key]?.value = File(result.single.path!);
     }
   }
 
@@ -443,7 +454,12 @@ class UserSettingsController extends GetxController {
       if (type == 'file') {
         final file = dynamicFieldFiles[key]?.value;
         if (isRequired && file == null) {
-          Get.snackbar('error'.tr, 'please_attach_required_file'.trParams({'field': field['label']?.toString() ?? ''}));
+          Get.snackbar(
+            'error'.tr,
+            'please_attach_required_file'.trParams({
+              'field': field['label']?.toString() ?? '',
+            }),
+          );
           return;
         }
         if (file != null) {
@@ -452,7 +468,12 @@ class UserSettingsController extends GetxController {
       } else if (type == 'select' || type == 'radio') {
         final val = dynamicSelectValues[key]?.value ?? '';
         if (isRequired && val.isEmpty) {
-          Get.snackbar('error'.tr, 'please_select_field'.trParams({'field': field['label']?.toString() ?? ''}));
+          Get.snackbar(
+            'error'.tr,
+            'please_select_field'.trParams({
+              'field': field['label']?.toString() ?? '',
+            }),
+          );
           return;
         }
         if (val.isNotEmpty) {
@@ -461,7 +482,12 @@ class UserSettingsController extends GetxController {
       } else {
         final textVal = dynamicFieldControllers[key]?.text.trim() ?? '';
         if (isRequired && textVal.isEmpty) {
-          Get.snackbar('error'.tr, 'please_fill_required_field'.trParams({'field': field['label']?.toString() ?? ''}));
+          Get.snackbar(
+            'error'.tr,
+            'please_fill_required_field'.trParams({
+              'field': field['label']?.toString() ?? '',
+            }),
+          );
           return;
         }
         if (textVal.isNotEmpty) {
@@ -474,7 +500,9 @@ class UserSettingsController extends GetxController {
       isLoading.value = true;
       final result = await _settingsService.submitKyc(
         documentType: selectedKycType.value,
-        documentNumber: numReq != 'disabled' ? kycDocNumberController.text.trim() : null,
+        documentNumber: numReq != 'disabled'
+            ? kycDocNumberController.text.trim()
+            : null,
         documentFront: frontReq != 'disabled' ? kycFrontFile.value : null,
         documentBack: backReq != 'disabled' ? kycBackFile.value : null,
         selfie: selfieReq != 'disabled' ? kycSelfieFile.value : null,
@@ -483,7 +511,10 @@ class UserSettingsController extends GetxController {
       );
 
       if (result['success']) {
-        Get.snackbar('success'.tr, result['message'] ?? 'kyc_submitted_successfully'.tr);
+        Get.snackbar(
+          'success'.tr,
+          result['message'] ?? 'kyc_submitted_successfully'.tr,
+        );
         fetchKycStatus();
       } else {
         Get.snackbar('error'.tr, result['message'] ?? 'submission_failed'.tr);
@@ -497,7 +528,9 @@ class UserSettingsController extends GetxController {
     try {
       final response = await _apiClient.dio.get('/user');
       if (response.statusCode == 200 && response.data != null) {
-        final userData = response.data is Map<String, dynamic> && response.data.containsKey('data')
+        final userData =
+            response.data is Map<String, dynamic> &&
+                response.data.containsKey('data')
             ? response.data['data']
             : response.data;
         if (userData is Map<String, dynamic>) {
@@ -539,10 +572,10 @@ class UserSettingsController extends GetxController {
       businessStatus.value = result['data']['business_status'];
       businessName.value = result['data']['business_name'] ?? '';
       businessReg.value = result['data']['business_registration_number'] ?? '';
-      
+
       businessNameController.text = businessName.value;
       businessRegController.text = businessReg.value;
-      
+
       kycStatus.value = result['data']['kyc_status'] ?? 'none';
     }
   }
@@ -552,7 +585,10 @@ class UserSettingsController extends GetxController {
       isLoading.value = true;
       final result = await _settingsService.upgradeToCreator();
       if (result['success']) {
-        Get.snackbar('success'.tr, result['message'] ?? 'upgraded_to_creator_successfully'.tr);
+        Get.snackbar(
+          'success'.tr,
+          result['message'] ?? 'upgraded_to_creator_successfully'.tr,
+        );
         fetchProfessionalStatus();
       } else {
         Get.snackbar('error'.tr, result['message'] ?? 'upgrade_failed'.tr);
@@ -575,7 +611,10 @@ class UserSettingsController extends GetxController {
         businessRegistration: businessRegController.text,
       );
       if (result['success']) {
-        Get.snackbar('success'.tr, result['message'] ?? 'upgraded_to_business_successfully'.tr);
+        Get.snackbar(
+          'success'.tr,
+          result['message'] ?? 'upgraded_to_business_successfully'.tr,
+        );
         fetchProfessionalStatus();
       } else {
         Get.snackbar('error'.tr, result['message'] ?? 'upgrade_failed'.tr);
@@ -598,7 +637,9 @@ class UserSettingsController extends GetxController {
 
     try {
       isLoading.value = true;
-      final result = await _settingsService.deleteAccount(deletePasswordController.text);
+      final result = await _settingsService.deleteAccount(
+        deletePasswordController.text,
+      );
       if (result['success']) {
         Get.snackbar('success'.tr, 'account_deleted_successfully'.tr);
         _authController.logout();
@@ -610,7 +651,8 @@ class UserSettingsController extends GetxController {
     }
   }
 
-  final _apiClient = Get.find<SettingsService>().apiClient; // Helper to access dio
+  final _apiClient =
+      Get.find<SettingsService>().apiClient; // Helper to access dio
 
   @override
   void onClose() {

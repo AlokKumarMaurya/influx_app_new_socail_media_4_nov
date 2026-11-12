@@ -56,15 +56,15 @@ class _JobApplySheetState extends State<JobApplySheet> {
 
   Future<void> _pickResume() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx'],
       );
 
-      if (result != null && result.files.single.path != null) {
+      if (result.single.path != null) {
         setState(() {
-          _resumeFile = File(result.files.single.path!);
-          _resumeFileName = result.files.single.name;
+          _resumeFile = File(result.single.path!);
+          _resumeFileName = result.single.name;
         });
       }
     } catch (e) {
@@ -207,12 +207,23 @@ class _JobApplySheetState extends State<JobApplySheet> {
                   hintText: 'John Doe',
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(12),
-                    child: HugeIcon(icon: HugeIcons.strokeRoundedUser, color: AppColors.textSecondary, size: 20),
+                    child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedUser,
+                      color: AppColors.textSecondary,
+                      size: 20,
+                    ),
                   ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                 ),
-                validator: (val) => val == null || val.trim().isEmpty ? 'Enter your full name' : null,
+                validator: (val) => val == null || val.trim().isEmpty
+                    ? 'Enter your full name'
+                    : null,
               ),
               const SizedBox(height: 14),
 
@@ -223,7 +234,10 @@ class _JobApplySheetState extends State<JobApplySheet> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Email Address *', style: AppTextStyles.bodyMedium),
+                        Text(
+                          'Email Address *',
+                          style: AppTextStyles.bodyMedium,
+                        ),
                         const SizedBox(height: 6),
                         TextFormField(
                           controller: _emailController,
@@ -232,12 +246,23 @@ class _JobApplySheetState extends State<JobApplySheet> {
                             hintText: 'john@mail.com',
                             prefixIcon: Padding(
                               padding: const EdgeInsets.all(12),
-                              child: HugeIcon(icon: HugeIcons.strokeRoundedMail01, color: AppColors.textSecondary, size: 20),
+                              child: HugeIcon(
+                                icon: HugeIcons.strokeRoundedMail01,
+                                color: AppColors.textSecondary,
+                                size: 20,
+                              ),
                             ),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                           ),
-                          validator: (val) => val == null || !val.contains('@') ? 'Enter a valid email' : null,
+                          validator: (val) => val == null || !val.contains('@')
+                              ? 'Enter a valid email'
+                              : null,
                         ),
                       ],
                     ),
@@ -256,10 +281,19 @@ class _JobApplySheetState extends State<JobApplySheet> {
                             hintText: '+123456789',
                             prefixIcon: Padding(
                               padding: const EdgeInsets.all(12),
-                              child: HugeIcon(icon: HugeIcons.strokeRoundedCall02, color: AppColors.textSecondary, size: 20),
+                              child: HugeIcon(
+                                icon: HugeIcons.strokeRoundedCall02,
+                                color: AppColors.textSecondary,
+                                size: 20,
+                              ),
                             ),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                           ),
                         ),
                       ],
@@ -276,15 +310,23 @@ class _JobApplySheetState extends State<JobApplySheet> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Experience (Years)', style: AppTextStyles.bodyMedium),
+                        Text(
+                          'Experience (Years)',
+                          style: AppTextStyles.bodyMedium,
+                        ),
                         const SizedBox(height: 6),
                         TextFormField(
                           controller: _expController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             hintText: 'e.g. 4',
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                           ),
                         ),
                       ],
@@ -300,17 +342,35 @@ class _JobApplySheetState extends State<JobApplySheet> {
                         DropdownButtonFormField<String>(
                           initialValue: _noticePeriod,
                           decoration: InputDecoration(
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
                           ),
                           items: const [
-                            DropdownMenuItem(value: 'Immediate', child: Text('Immediate')),
-                            DropdownMenuItem(value: '1-2 Weeks', child: Text('1-2 Weeks')),
-                            DropdownMenuItem(value: '1 Month', child: Text('1 Month')),
-                            DropdownMenuItem(value: '2 Months+', child: Text('2 Months+')),
+                            DropdownMenuItem(
+                              value: 'Immediate',
+                              child: Text('Immediate'),
+                            ),
+                            DropdownMenuItem(
+                              value: '1-2 Weeks',
+                              child: Text('1-2 Weeks'),
+                            ),
+                            DropdownMenuItem(
+                              value: '1 Month',
+                              child: Text('1 Month'),
+                            ),
+                            DropdownMenuItem(
+                              value: '2 Months+',
+                              child: Text('2 Months+'),
+                            ),
                           ],
                           onChanged: (val) {
-                            if (val != null) setState(() => _noticePeriod = val);
+                            if (val != null)
+                              setState(() => _noticePeriod = val);
                           },
                         ),
                       ],
@@ -329,16 +389,28 @@ class _JobApplySheetState extends State<JobApplySheet> {
                   hintText: 'e.g. \$80,000 / year or Negotiable',
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(12),
-                    child: HugeIcon(icon: HugeIcons.strokeRoundedWallet01, color: AppColors.textSecondary, size: 20),
+                    child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedWallet01,
+                      color: AppColors.textSecondary,
+                      size: 20,
+                    ),
                   ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                 ),
               ),
               const SizedBox(height: 14),
 
               // Links: LinkedIn & Portfolio
-              Text('Professional Links (Optional)', style: AppTextStyles.bodyMedium),
+              Text(
+                'Professional Links (Optional)',
+                style: AppTextStyles.bodyMedium,
+              ),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _linkedinController,
@@ -346,10 +418,19 @@ class _JobApplySheetState extends State<JobApplySheet> {
                   hintText: 'LinkedIn Profile URL',
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(12),
-                    child: HugeIcon(icon: HugeIcons.strokeRoundedLinkedin02, color: AppColors.textSecondary, size: 20),
+                    child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedLinkedin02,
+                      color: AppColors.textSecondary,
+                      size: 20,
+                    ),
                   ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -359,16 +440,28 @@ class _JobApplySheetState extends State<JobApplySheet> {
                   hintText: 'Portfolio / GitHub Website URL',
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(12),
-                    child: HugeIcon(icon: HugeIcons.strokeRoundedGlobe02, color: AppColors.textSecondary, size: 20),
+                    child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedGlobe02,
+                      color: AppColors.textSecondary,
+                      size: 20,
+                    ),
                   ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                 ),
               ),
               const SizedBox(height: 14),
 
               // Resume Upload Picker
-              Text('Attach Resume (PDF, DOC) *', style: AppTextStyles.bodyMedium),
+              Text(
+                'Attach Resume (PDF, DOC) *',
+                style: AppTextStyles.bodyMedium,
+              ),
               const SizedBox(height: 8),
               InkWell(
                 onTap: _pickResume,
@@ -379,7 +472,9 @@ class _JobApplySheetState extends State<JobApplySheet> {
                   decoration: BoxDecoration(
                     color: AppColors.background,
                     border: Border.all(
-                      color: _resumeFile != null ? AppColors.primary : Colors.grey.shade300,
+                      color: _resumeFile != null
+                          ? AppColors.primary
+                          : Colors.grey.shade300,
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(14),
@@ -410,21 +505,29 @@ class _JobApplySheetState extends State<JobApplySheet> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: _resumeFile != null ? AppColors.textMain : AppColors.textSecondary,
+                                color: _resumeFile != null
+                                    ? AppColors.textMain
+                                    : AppColors.textSecondary,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _resumeFile != null ? 'File ready to upload' : 'Max size 10MB (PDF, DOC, DOCX)',
+                              _resumeFile != null
+                                  ? 'File ready to upload'
+                                  : 'Max size 10MB (PDF, DOC, DOCX)',
                               style: AppTextStyles.bodySmall,
                             ),
                           ],
                         ),
                       ),
                       if (_resumeFile != null)
-                        const Icon(Icons.check_circle, color: Colors.green, size: 20),
+                        const Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                          size: 20,
+                        ),
                     ],
                   ),
                 ),
@@ -438,8 +541,11 @@ class _JobApplySheetState extends State<JobApplySheet> {
                 controller: _coverLetterController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'Briefly introduce yourself and why you are a great match for this role...',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  hintText:
+                      'Briefly introduce yourself and why you are a great match for this role...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   contentPadding: const EdgeInsets.all(12),
                 ),
               ),
@@ -453,17 +559,26 @@ class _JobApplySheetState extends State<JobApplySheet> {
                   onPressed: _isSubmitting ? null : _submitApplication,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   child: _isSubmitting
                       ? const SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
                       : const Text(
                           'Submit Application',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                 ),
               ),
