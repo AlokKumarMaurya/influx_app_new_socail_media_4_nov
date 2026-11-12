@@ -33,6 +33,8 @@ class NetworkInspector {
         'confirm_password',
         'token',
         'otp',
+        'code',
+        'access_token',
         'secret',
         'client_secret',
       },
