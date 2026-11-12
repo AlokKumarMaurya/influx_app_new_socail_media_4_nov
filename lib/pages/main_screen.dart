@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:influx_app/config/app_config.dart';
 import 'package:influx_app/pages/marketplace/my_listings_page.dart';
+import 'package:influx_app/controllers/marketplace_controller.dart';
 import 'package:influx_app/utils/external_app_launcher.dart';
 import 'package:influx_app/pages/auth/verify_otp.dart';
 import 'package:influx_app/pages/fan_page/jobs/all_jobs_explore_page.dart';
@@ -580,6 +581,9 @@ class MainScreen extends StatelessWidget {
         tooltip: 'Marketplace shortcuts',
         onSelected: (value) {
           if (value == 'my_listings') {
+            if (!Get.isRegistered<MarketplaceController>()) {
+              Get.put(MarketplaceController());
+            }
             Get.to(() => const MyListingsPage());
           } else if (value == 'hami_mall') {
             ExternalAppLauncher.launch(
