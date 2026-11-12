@@ -25,7 +25,6 @@ import 'story/create_story_page.dart';
 import 'feed/create_group_page.dart';
 import '../controllers/notification_controller.dart';
 import 'chat/conversations_page.dart';
-import 'marketplace/marketplace_page.dart';
 import 'marketplace/create_listing_page.dart';
 import 'fan_page/fan_pages_list_page.dart';
 import 'live/go_live_setup_page.dart';
