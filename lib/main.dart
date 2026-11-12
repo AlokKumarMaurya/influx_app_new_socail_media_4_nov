@@ -82,6 +82,15 @@ class MyApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
+        builder: (context, child) {
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              child ?? const SizedBox.shrink(),
+              const NetworkInspectorLauncher(),
+            ],
+          );
+        },
         localeResolutionCallback: (deviceLocale, supportedLocales) {
           // Always honor the app's default/selected language instead of device system locale
           return languageController.currentLocale.value;
