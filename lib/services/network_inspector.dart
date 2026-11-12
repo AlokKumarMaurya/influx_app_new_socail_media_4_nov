@@ -10,8 +10,10 @@ class NetworkInspector {
 
   static Alice? _alice;
   static AliceDioAdapter? _dioAdapter;
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
+  // Alice must share the app's root navigator key so showInspector()
+  // can push its inspector route onto the visible GetMaterialApp navigator.
+  static GlobalKey<NavigatorState>? get navigatorKey =>
+      kDebugMode ? _alice?.getNavigatorKey() : null;
   static final ValueNotifier<int> requestCount = ValueNotifier<int>(0);
 
   static void initialize() {
