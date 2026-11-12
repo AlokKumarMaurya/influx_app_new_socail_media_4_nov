@@ -76,45 +76,53 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> login(String email, String password) async {
+  Future<bool> login(
+    String email,
+    String password, {
+    bool showError = true,
+  }) async {
     try {
       isLoading.value = true;
       final response = await _authService.login(email, password);
       await _handleAuthSuccess(response);
+      return isAuthenticated.value;
     } catch (e) {
-      String message = 'Login failed';
-      bool isUnverified = false;
-      if (e is DioException) {
-        final data = e.response?.data;
-        if (data is Map) {
-          message = data['message'] ?? message;
-          if (data['code'] == 'EMAIL_UNVERIFIED' ||
-              (e.response?.statusCode == 403 && message.contains('activate'))) {
-            isUnverified = true;
+      if (showError) {
+        String message = 'Login failed';
+        bool isUnverified = false;
+        if (e is DioException) {
+          final data = e.response?.data;
+          if (data is Map) {
+            message = data['message']?.toString() ?? message;
+            if (data['code'] == 'EMAIL_UNVERIFIED' ||
+                (e.response?.statusCode == 403 && message.contains('activate'))) {
+              isUnverified = true;
+            }
+          } else if (data is String) {
+            message = data;
           }
-        } else if (data is String) {
-          message = data;
         }
-      }
-      Get.snackbar(
-        isUnverified ? 'Account Unverified' : 'Error',
-        message,
-        backgroundColor: isUnverified ? Colors.orange.shade900 : Colors.red,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 7),
-        mainButton: isUnverified
-            ? TextButton(
-                onPressed: () => resendVerification(email),
-                child: Text(
-                  'resend_email'.tr,
-                  style: const TextStyle(
-                    color: Colors.yellowAccent,
-                    fontWeight: FontWeight.bold,
+        Get.snackbar(
+          isUnverified ? 'Account Unverified' : 'Error',
+          message,
+          backgroundColor: isUnverified ? Colors.orange.shade900 : Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 7),
+          mainButton: isUnverified
+              ? TextButton(
+                  onPressed: () => resendVerification(email),
+                  child: Text(
+                    'resend_email'.tr,
+                    style: const TextStyle(
+                      color: Colors.yellowAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              )
-            : null,
-      );
+                )
+              : null,
+        );
+      }
+      return false;
     } finally {
       isLoading.value = false;
     }
