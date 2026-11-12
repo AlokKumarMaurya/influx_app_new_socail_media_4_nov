@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:influx_app/config/app_config.dart';
+import 'package:influx_app/pages/marketplace/my_listings_page.dart';
+import 'package:influx_app/utils/external_app_launcher.dart';
 import 'package:influx_app/pages/auth/verify_otp.dart';
 import 'package:influx_app/pages/fan_page/jobs/all_jobs_explore_page.dart';
 import 'marketplace/mall_products_page.dart';
@@ -493,10 +495,7 @@ class MainScreen extends StatelessWidget {
               ),
               actions: [
                 if (featureCtrl.isFeatureEnabled('marketplace_system'))
-                  _buildAppBarAction(
-                    HugeIcons.strokeRoundedShoppingBag01,
-                    () => Get.to(() => const MarketplacePage()),
-                  ),
+                  _buildMarketplaceMenuAction(context),
                 _buildAppBarAction(
                   HugeIcons.strokeRoundedAdd01,
                   () => _showAddBottomSheet(context),
@@ -567,6 +566,49 @@ class MainScreen extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Widget _buildMarketplaceMenuAction(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(left: 8),
+      decoration: BoxDecoration(
+        color: AppColors.isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.black.withValues(alpha: 0.04),
+        shape: BoxShape.circle,
+      ),
+      child: PopupMenuButton<String>(
+        tooltip: 'Marketplace shortcuts',
+        onSelected: (value) {
+          if (value == 'my_listings') {
+            Get.to(() => const MyListingsPage());
+          } else if (value == 'hami_mall') {
+            ExternalAppLauncher.launch(
+              context,
+              url: ExternalAppLinks.hamiMall,
+              appName: 'Hami Mall',
+            );
+          }
+        },
+        itemBuilder: (context) => const [
+          PopupMenuItem<String>(
+            value: 'my_listings',
+            child: Text('My Listing'),
+          ),
+          PopupMenuItem<String>(
+            value: 'hami_mall',
+            child: Text('Hami Mall'),
+          ),
+        ],
+        icon: HugeIcon(
+          icon: HugeIcons.strokeRoundedShoppingBag01,
+          color: AppColors.textMain,
+          size: 20,
+        ),
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(),
+      ),
+    );
   }
 
   Widget _buildAppBarAction(
