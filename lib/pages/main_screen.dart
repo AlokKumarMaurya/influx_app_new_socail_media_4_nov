@@ -572,10 +572,14 @@ class MainScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 8),
       decoration: BoxDecoration(
-        color: AppColors.isDark
-            ? Colors.white.withValues(alpha: 0.05)
-            : Colors.black.withValues(alpha: 0.04),
         shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.30),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: PopupMenuButton<String>(
         tooltip: 'Marketplace shortcuts',
@@ -593,23 +597,60 @@ class MainScreen extends StatelessWidget {
             );
           }
         },
-        itemBuilder: (context) => const [
+        color: AppColors.cardBg,
+        elevation: 12,
+        shadowColor: Colors.black38,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        itemBuilder: (context) => [
           PopupMenuItem<String>(
             value: 'my_listings',
-            child: Text('My Listing'),
+            child: Row(
+              children: [
+                Icon(Icons.inventory_2_outlined,
+                    color: AppColors.primary, size: 20),
+                const SizedBox(width: 12),
+                Text('My Listing',
+                    style: TextStyle(
+                      color: AppColors.textMain,
+                      fontWeight: FontWeight.w600,
+                    )),
+              ],
+            ),
           ),
           PopupMenuItem<String>(
             value: 'hami_mall',
-            child: Text('Hami Mall'),
+            child: Row(
+              children: [
+                Icon(Icons.storefront_outlined,
+                    color: AppColors.primary, size: 20),
+                const SizedBox(width: 12),
+                Text('Hami Mall',
+                    style: TextStyle(
+                      color: AppColors.textMain,
+                      fontWeight: FontWeight.w600,
+                    )),
+              ],
+            ),
           ),
         ],
-        icon: HugeIcon(
+        icon: const HugeIcon(
           icon: HugeIcons.strokeRoundedShoppingBag01,
-          color: AppColors.textMain,
-          size: 20,
+          color: Colors.white,
+          size: 21,
         ),
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(12),
         constraints: const BoxConstraints(),
+        style: ButtonStyle(
+          backgroundColor: WidgetStatePropertyAll(AppColors.primary),
+          shape: const WidgetStatePropertyAll(CircleBorder()),
+          elevation: const WidgetStatePropertyAll(6),
+          shadowColor: WidgetStatePropertyAll(
+            AppColors.primary.withValues(alpha: 0.35),
+          ),
+        ),
       ),
     );
   }
