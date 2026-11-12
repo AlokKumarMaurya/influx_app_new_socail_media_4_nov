@@ -35,24 +35,43 @@ class VerificationCodeController extends GetxController {
         "token": argument.token,
       });
 
-      if (response.statusCode == 200) {
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {
         final credentials = argument.signUpRequest;
-        final loginIdentifier = credentials.email?.trim().isNotEmpty == true
-            ? credentials.email!.trim()
-            : (credentials.username ?? '').trim();
+        final email = (credentials.email ?? '').trim();
+        final username = (credentials.username ?? '').trim();
         final password = credentials.password ?? '';
 
-        if (loginIdentifier.isNotEmpty && password.isNotEmpty) {
-          // Reuse the existing login flow so token persistence, profile setup,
-          // push registration and post-login navigation stay consistent.
+        if (password.isNotEmpty) {
+          // Reuse the app's existing login method. The API accepts either
+          // email or username in its "login" field, so try both credentials
+          // when they are present instead of assuming email is accepted.
           final authController = Get.find<AuthController>();
-          await authController.login(loginIdentifier, password);
+          final identifiers = <String>[
+            if (email.isNotEmpty) email,
+            if (username.isNotEmpty && username.toLowerCase() != email.toLowerCase())
+              username,
+          ];
 
-          if (authController.isAuthenticated.value) return;
+          for (final identifier in identifiers) {
+            final loggedIn = await authController.login(
+              identifier,
+              password,
+              showError: false,
+            );
+            if (loggedIn || authController.isAuthenticated.value) return;
+          }
         }
 
-        // If automatic login cannot complete, let the user sign in manually
-        // instead of leaving the OTP screen stuck behind its loading overlay.
+        error = 'OTP verified, but automatic login failed. Please log in.';
+        Get.snackbar(
+          'Verification successful',
+          error,
+          backgroundColor: Colors.orange.shade900,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 6),
+        );
         Get.offAll(() => const AuthPage());
       } else {
         final message = response.data is Map
