@@ -22,8 +22,6 @@ dependencies:
   flutter_svg: ^2.0.10+1
   google_fonts: ^6.2.1
   dio: ^5.9.0
-  alice: ^2.0.0
-  alice_dio: ^1.4.0
   intl: ^0.20.2
   carousel_slider: ^5.1.1
   hugeicons: ^1.1.5
