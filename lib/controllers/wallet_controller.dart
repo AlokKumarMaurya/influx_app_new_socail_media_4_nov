@@ -3,7 +3,7 @@ import 'package:dio/dio.dart' as dio_pkg;
 import 'package:get/get.dart';
 import '../data/providers/api_client.dart';
 import '../data/models/wallet_log_model.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '../utils/app_theme.dart';
 import '../data/models/transaction_model.dart';
 

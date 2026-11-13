@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import '../../utils/app_theme.dart';
 import '../../controllers/feed_controller.dart';
@@ -147,7 +147,7 @@ class _FeedPageState extends State<FeedPage> {
   Widget _buildFeedItem(FeedItem item) {
     switch (item.type) {
       case FeedItemType.post:
-        return PostCard(post: item.post!);
+        return PostCard(post: item.post!,isSingleView: true,);
       case FeedItemType.ad:
         return AdCard(ad: item.ad!);
       case FeedItemType.suggestedGroups:

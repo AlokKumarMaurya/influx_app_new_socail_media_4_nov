@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart' hide ThemeMode;
 import 'package:flutter/foundation.dart';
 import 'services/network_inspector.dart';
 import 'package:get/get.dart';
@@ -20,7 +20,7 @@ import 'config/app_config.dart';
 
 import 'package:flutter_stripe/flutter_stripe.dart';
 
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' hide GlobalMaterialLocalizations;
 import 'controllers/language_controller.dart';
 import 'l10n/app_localizations.dart';
 

@@ -1,6 +1,6 @@
 // ignore_for_file: use_null_aware_elements
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';

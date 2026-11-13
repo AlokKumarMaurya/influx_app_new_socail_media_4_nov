@@ -60,6 +60,9 @@ dependencies:
   media_kit_libs_audio: ^1.0.7
   package_info_plus: ^10.2.1
   pinput: 6.0.2
+  material_ui: ^1.11.0
+  cupertino_ui: ^1.1.6
+  http_parser: any
 
 dev_dependencies:
   flutter_test:
