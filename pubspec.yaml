@@ -84,6 +84,14 @@ flutter:
     - assets/images/img/
     - assets/audio/
 
+dependency_overrides:
+  # video_thumbnail 0.5.6 uses jcenter() and pins AGP 4.1.0,
+  # which breaks Gradle 9 / AGP 9 builds. Use the AGP 9-compatible fix.
+  video_thumbnail:
+    git:
+      url: https://github.com/ameyanaik11/video_thumbnail.git
+      ref: cfdd3cc599773aba4e8c866c4ccf1f7713e8af48
+
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
