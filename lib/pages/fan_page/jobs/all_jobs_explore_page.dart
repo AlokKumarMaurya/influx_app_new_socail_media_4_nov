@@ -282,12 +282,12 @@ class _AllJobsExplorePageState extends State<AllJobsExplorePage> {
         onPressed: () => ExternalAppLauncher.launch(
           context,
           url: ExternalAppLinks.hamiMitr,
-          appName: 'Hami Mitr',
+          appName: 'Hme Mitra',
         ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.local_shipping_outlined),
-        label: const Text('Hami Mitr'),
+        label: const Text('Hme Mitra'),
       ),
     );
   }

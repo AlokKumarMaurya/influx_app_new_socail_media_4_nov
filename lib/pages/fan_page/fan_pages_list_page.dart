@@ -434,12 +434,12 @@ class _FanPagesListPageState extends State<FanPagesListPage> with SingleTickerPr
         onPressed: () => ExternalAppLauncher.launch(
           context,
           url: ExternalAppLinks.hamiBusiness,
-          appName: 'Hami Business',
+          appName: 'Hme Business',
         ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.business_center_outlined),
-        label: const Text('Hami Business'),
+        label: const Text('Hme Business'),
       ),
     );
   }

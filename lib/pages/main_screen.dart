@@ -593,7 +593,7 @@ class MainScreen extends StatelessWidget {
             ExternalAppLauncher.launch(
               context,
               url: ExternalAppLinks.hamiMall,
-              appName: 'Hami Mall',
+              appName: 'Hme Mall',
             );
           }
         },
@@ -627,7 +627,7 @@ class MainScreen extends StatelessWidget {
                 Icon(Icons.storefront_outlined,
                     color: AppColors.primary, size: 20),
                 const SizedBox(width: 12),
-                Text('Hami Mall',
+                Text('Hme Mall',
                     style: TextStyle(
                       color: AppColors.textMain,
                       fontWeight: FontWeight.w600,
