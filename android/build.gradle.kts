@@ -17,12 +17,14 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 
-    // Several Flutter plugins (including agora_rtc_engine 6.5.0) still
-    // declare compileSdk 31. Raise Android library modules to the app's
-    // compileSdk so their AndroidX dependencies can pass AAR metadata checks.
-    plugins.withId("com.android.library") {
-        extensions.configure<LibraryExtension> {
-            compileSdk = 36
+    // Some Flutter Android library plugins (including agora_rtc_engine)
+    // declare an older compileSdk in their own build scripts. Apply the
+    // override after project evaluation so it wins over plugin defaults.
+    afterEvaluate {
+        if (plugins.hasPlugin("com.android.library")) {
+            extensions.configure<LibraryExtension> {
+                compileSdk = 36
+            }
         }
     }
 }
