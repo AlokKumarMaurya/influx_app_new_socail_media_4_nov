@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import '../../controllers/chat_controller.dart';
 import '../../data/models/conversation_model.dart';

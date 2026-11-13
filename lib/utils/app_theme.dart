@@ -1,4 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show ThemeMode,ThemeData;
+import 'package:flutter/src/material/card_theme.dart';
+import 'package:flutter/src/material/color_scheme.dart';
+import 'package:flutter/src/material/text_theme.dart';
+import 'package:material_ui/material_ui.dart' hide ThemeMode, ThemeData, ColorScheme, CardThemeData, TextTheme;
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controllers/settings_controller.dart';
@@ -52,7 +56,7 @@ class AppTheme {
       seedColor: AppColors.primary,
       brightness: Brightness.light,
       surface: const Color(0xFFF8FAFC),
-    ),
+    ) as ColorScheme?,
     scaffoldBackgroundColor: const Color(0xFFF8FAFC),
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFFF8FAFC),
@@ -65,11 +69,11 @@ class AppTheme {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
-    ),
+    ) as CardThemeData?,
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Color(0xFF0F172A)),
       bodyMedium: TextStyle(color: Color(0xFF0F172A)),
-    ),
+    ) as TextTheme?,
   );
 
   static final darkTheme = ThemeData(

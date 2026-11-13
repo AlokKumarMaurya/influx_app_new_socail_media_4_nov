@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/src/material/app.dart';
+import 'package:material_ui/material_ui.dart' hide ThemeMode;
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../utils/app_theme.dart';
@@ -436,7 +437,7 @@ class AppDrawer extends StatelessWidget {
                   activeThumbColor: AppColors.primary,
                   onChanged: (bool isDark) {
                     settingsController.changeTheme(
-                      isDark ? ThemeMode.dark : ThemeMode.light,
+                      (isDark ? ThemeMode.dark : ThemeMode.light),
                     );
                   },
                 )),

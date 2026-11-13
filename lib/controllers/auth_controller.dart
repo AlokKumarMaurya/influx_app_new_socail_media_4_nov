@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart' hide TextButton;
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dio/dio.dart';
@@ -16,6 +16,7 @@ import './custom_page_controller.dart';
 import './chat_controller.dart';
 import './user_settings_controller.dart';
 import '../data/services/push_notification_service.dart';
+import 'package:flutter/material.dart' show TextButton;
 
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();

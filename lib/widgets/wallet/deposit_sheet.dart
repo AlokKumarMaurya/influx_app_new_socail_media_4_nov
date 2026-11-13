@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+import 'package:flutter/src/material/app.dart';
+import 'package:material_ui/material_ui.dart' hide ThemeMode;
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
@@ -223,7 +224,7 @@ class _DepositSheetState extends State<DepositSheet> {
             paymentSheetParameters: SetupPaymentSheetParameters(
               paymentIntentClientSecret: clientSecret,
               merchantDisplayName: 'InFluX Community',
-              style: ThemeMode.light,
+              style: ThemeMode.light as ThemeMode?,
             ),
           );
           await Stripe.instance.presentPaymentSheet();
