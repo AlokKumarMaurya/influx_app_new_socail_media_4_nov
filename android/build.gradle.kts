@@ -7,6 +7,10 @@ allprojects {
     }
 }
 
+// agora_rtc_engine reads this root extra property and otherwise falls back
+// to compileSdk 31, which is too old for its AndroidX dependencies.
+extra["compileSdkVersion"] = 36
+
 val newBuildDir: Directory =
     rootProject.layout.buildDirectory
         .dir("../../build")
