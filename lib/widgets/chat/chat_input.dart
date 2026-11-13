@@ -571,9 +571,9 @@ class ChatInputState extends State<ChatInput> {
   }
 
   Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result != null && result.files.single.path != null) {
-      final file = File(result.files.single.path!);
+    final result = await FilePicker.pickFiles();
+    if (result.single.path != null) {
+      final file = File(result.single.path!);
       if (_validateFileSize(file)) {
         setState(() {
           _attachmentFile = file;

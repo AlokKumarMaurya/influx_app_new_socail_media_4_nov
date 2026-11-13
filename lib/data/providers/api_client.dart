@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import '../../services/network_inspector.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../config/app_config.dart';
@@ -21,6 +23,10 @@ class ApiClient {
         'Accept': 'application/json',
       },
     ));
+
+    if (kDebugMode) {
+      NetworkInspector.attachTo(dio);
+    }
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {

@@ -57,16 +57,22 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
 
   @override
   void initState() {
-    if (widget.argument.signUpRequest.isAutoFill) {
-      autoFillOtp();
-    }
     super.initState();
+    if (widget.argument.signUpRequest.isAutoFill) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => autoFillOtp());
+    }
   }
 
   Future<void> autoFillOtp() async {
-    await Future.delayed(Duration(seconds: 1));
-    _verificationCodeController.text = widget.argument.signUpRequest.otp!;
-    Get.find<VerificationCodeController>().verifyCodeForSignUp(
+    await Future.delayed(const Duration(seconds: 1));
+    if (!mounted) return;
+
+    final otp = widget.argument.signUpRequest.otp;
+    if (otp == null || otp.trim().length != 6) return;
+
+    _verificationCodeController.text = otp.trim();
+    final controller = Get.find<VerificationCodeController>();
+    await controller.verifyCodeForSignUp(
       argument: widget.argument,
       otp: _verificationCodeController.text,
     );

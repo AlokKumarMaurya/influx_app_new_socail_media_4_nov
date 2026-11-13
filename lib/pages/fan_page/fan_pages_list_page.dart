@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import '../../utils/external_app_launcher.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../utils/app_theme.dart';
 import '../../widgets/common/custom_network_image.dart';
@@ -428,6 +429,17 @@ class _FanPagesListPageState extends State<FanPagesListPage> with SingleTickerPr
           _buildMyPagesTab(),
           _buildFollowedPagesTab(),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => ExternalAppLauncher.launch(
+          context,
+          url: ExternalAppLinks.hamiBusiness,
+          appName: 'Hme Business',
+        ),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.business_center_outlined),
+        label: const Text('Hme Business'),
       ),
     );
   }

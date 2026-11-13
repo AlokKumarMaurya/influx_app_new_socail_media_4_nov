@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:influx_app/config/app_config.dart';
+import 'package:influx_app/pages/marketplace/my_listings_page.dart';
+import 'package:influx_app/controllers/marketplace_controller.dart';
+import 'package:influx_app/utils/external_app_launcher.dart';
 import 'package:influx_app/pages/auth/verify_otp.dart';
 import 'package:influx_app/pages/fan_page/jobs/all_jobs_explore_page.dart';
 import 'marketplace/mall_products_page.dart';
@@ -23,7 +26,6 @@ import 'story/create_story_page.dart';
 import 'feed/create_group_page.dart';
 import '../controllers/notification_controller.dart';
 import 'chat/conversations_page.dart';
-import 'marketplace/marketplace_page.dart';
 import 'marketplace/create_listing_page.dart';
 import 'fan_page/fan_pages_list_page.dart';
 import 'live/go_live_setup_page.dart';
@@ -493,10 +495,7 @@ class MainScreen extends StatelessWidget {
               ),
               actions: [
                 if (featureCtrl.isFeatureEnabled('marketplace_system'))
-                  _buildAppBarAction(
-                    HugeIcons.strokeRoundedShoppingBag01,
-                    () => Get.to(() => const MarketplacePage()),
-                  ),
+                  _buildMarketplaceMenuAction(context),
                 _buildAppBarAction(
                   HugeIcons.strokeRoundedAdd01,
                   () => _showAddBottomSheet(context),
@@ -567,6 +566,93 @@ class MainScreen extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Widget _buildMarketplaceMenuAction(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(left: 8),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.30),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: PopupMenuButton<String>(
+        tooltip: 'Marketplace shortcuts',
+        onSelected: (value) {
+          if (value == 'my_listings') {
+            if (!Get.isRegistered<MarketplaceController>()) {
+              Get.put(MarketplaceController());
+            }
+            Get.to(() => const MyListingsPage());
+          } else if (value == 'hami_mall') {
+            ExternalAppLauncher.launch(
+              context,
+              url: ExternalAppLinks.hamiMall,
+              appName: 'Hme Mall',
+            );
+          }
+        },
+        color: AppColors.cardBg,
+        elevation: 12,
+        shadowColor: Colors.black38,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        itemBuilder: (context) => [
+          PopupMenuItem<String>(
+            value: 'my_listings',
+            child: Row(
+              children: [
+                Icon(Icons.inventory_2_outlined,
+                    color: AppColors.primary, size: 20),
+                const SizedBox(width: 12),
+                Text('My Listing',
+                    style: TextStyle(
+                      color: AppColors.textMain,
+                      fontWeight: FontWeight.w600,
+                    )),
+              ],
+            ),
+          ),
+          PopupMenuItem<String>(
+            value: 'hami_mall',
+            child: Row(
+              children: [
+                Icon(Icons.storefront_outlined,
+                    color: AppColors.primary, size: 20),
+                const SizedBox(width: 12),
+                Text('Hme Mall',
+                    style: TextStyle(
+                      color: AppColors.textMain,
+                      fontWeight: FontWeight.w600,
+                    )),
+              ],
+            ),
+          ),
+        ],
+        icon: const HugeIcon(
+          icon: HugeIcons.strokeRoundedShoppingBag01,
+          color: Colors.white,
+          size: 21,
+        ),
+        padding: const EdgeInsets.all(12),
+        constraints: const BoxConstraints(),
+        style: ButtonStyle(
+          backgroundColor: WidgetStatePropertyAll(AppColors.primary),
+          shape: const WidgetStatePropertyAll(CircleBorder()),
+          elevation: const WidgetStatePropertyAll(6),
+          shadowColor: WidgetStatePropertyAll(
+            AppColors.primary.withValues(alpha: 0.35),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildAppBarAction(

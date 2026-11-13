@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import '../../../utils/external_app_launcher.dart';
 import '../../../data/models/fan_page_job_model.dart';
 import '../../../data/services/fan_page_job_service.dart';
 import '../../../utils/app_theme.dart';
@@ -276,6 +277,17 @@ class _AllJobsExplorePageState extends State<AllJobsExplorePage> {
                   ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => ExternalAppLauncher.launch(
+          context,
+          url: ExternalAppLinks.hamiMitr,
+          appName: 'Hme Mitra',
+        ),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.local_shipping_outlined),
+        label: const Text('Hme Mitra'),
       ),
     );
   }

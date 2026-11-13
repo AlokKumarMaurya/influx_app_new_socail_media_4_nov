@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'services/network_inspector.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'pages/splash/splash_page.dart';
@@ -25,6 +27,9 @@ import 'l10n/app_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
+  if (kDebugMode) {
+    NetworkInspector.initialize();
+  }
   Stripe.publishableKey = 'pk_test_placeholder';
   try {
     await Stripe.instance.applySettings();
@@ -61,6 +66,7 @@ class MyApp extends StatelessWidget {
     
     return Obx(() {
       return GetMaterialApp(
+        navigatorKey: NetworkInspector.navigatorKey,
         title: AppConfig.appName,
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
@@ -76,6 +82,15 @@ class MyApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
+        builder: (context, child) {
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              child ?? const SizedBox.shrink(),
+              const NetworkInspectorLauncher(),
+            ],
+          );
+        },
         localeResolutionCallback: (deviceLocale, supportedLocales) {
           // Always honor the app's default/selected language instead of device system locale
           return languageController.currentLocale.value;
