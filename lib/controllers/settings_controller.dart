@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:material_ui/material_ui.dart' hide ThemeMode;
+import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../config/app_config.dart';
@@ -98,4 +97,3 @@ class SettingsController extends GetxController {
     }
   }
 }
-
