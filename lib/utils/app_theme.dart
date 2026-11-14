@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart' show ThemeMode,ThemeData;
+import 'package:flutter/material.dart' show AppBarTheme, ThemeMode, ThemeData;
 import 'package:flutter/src/material/card_theme.dart';
 import 'package:flutter/src/material/color_scheme.dart';
 import 'package:flutter/src/material/text_theme.dart';
-import 'package:material_ui/material_ui.dart' hide ThemeMode, ThemeData, ColorScheme, CardThemeData, TextTheme;
+import 'package:material_ui/material_ui.dart' hide AppBarTheme, ThemeMode, ThemeData, ColorScheme, CardThemeData, TextTheme;
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controllers/settings_controller.dart';
