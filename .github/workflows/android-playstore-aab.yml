@@ -1,4 +1,5 @@
 name: Android Play Store App Bundle
+# Release version is maintained in pubspec.yaml.
 
 on:
   push:
