@@ -72,6 +72,25 @@ class DeepLinkService {
 
     if (resource.isEmpty) return;
 
+    // Product share route from Laravel: https://<host>/link/product/{id}.
+    // Android reaches this handler after the verified App Link opens the app.
+    if (resource == 'link' && segments.length >= 3 && segments[1] == 'product') {
+      final productId = int.tryParse(segments[2]);
+      if (productId != null) {
+        Get.to(() => ProductDetailPage(productId: productId));
+        return;
+      }
+    }
+
+    // Keep support for the existing custom URL format: influx://product/{id}.
+    if (resource == 'product' && idStr != null) {
+      final productId = int.tryParse(idStr);
+      if (productId != null) {
+        Get.to(() => ProductDetailPage(productId: productId));
+        return;
+      }
+    }
+
     // 1. Posts (/posts/{id} or /post/{id})
     if (resource == 'posts' || resource == 'post') {
       if (idStr != null) {
