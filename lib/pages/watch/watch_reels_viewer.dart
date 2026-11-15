@@ -64,7 +64,7 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                   key: ValueKey(video.mediaId),
                   videoUrl: video.videoUrl,
                   mediaId: video.mediaId,
-                  autoPlay: index == _currentIndex,
+                  autoPlay: true,
                   looping: true,
                   enableFullScreen: false,
                 ),
