@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 import '../../utils/app_theme.dart';
 import '../../controllers/watch_controller.dart';
 import '../../widgets/watch/watch_video_card.dart';
@@ -18,6 +19,7 @@ class WatchPage extends StatefulWidget {
 class _WatchPageState extends State<WatchPage> {
   final ScrollController _scrollController = ScrollController();
   late WatchController controller;
+  final Map<int, VideoPlayerController> _activeVideoControllers = {};
 
   @override
   void initState() {
@@ -107,11 +109,11 @@ class _WatchPageState extends State<WatchPage> {
                           video: videoModel,
                           onOpenFullScreen: () => Get.to(
                             () => WatchReelsViewer(
-                              initialIndex: controller.videos.indexWhere(
-                                (video) => video.mediaId == videoModel.mediaId,
-                              ),
+                              initialIndex: controller.videos.indexWhere((video) => video.mediaId == videoModel.mediaId),
+                              initialVideoController: _activeVideoControllers[videoModel.mediaId],
                             ),
                           ),
+                          onVideoControllerReady: (player) => _activeVideoControllers[videoModel.mediaId] = player,
                         );
                       case FeedItemType.ad:
                         return AdCard(ad: item.ad!);
