@@ -25,7 +25,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class WatchVideoCard extends StatefulWidget {
   final WatchVideoModel video;
-  const WatchVideoCard({super.key, required this.video});
+  final VoidCallback? onOpenFullScreen;
+  const WatchVideoCard({super.key, required this.video, this.onOpenFullScreen});
 
   @override
   State<WatchVideoCard> createState() => _WatchVideoCardState();
@@ -290,6 +291,8 @@ class _WatchVideoCardState extends State<WatchVideoCard> {
               mediaId: video.mediaId,
               autoPlay: true,
               looping: true,
+              enableFullScreen: false,
+              onTap: widget.onOpenFullScreen,
             ),
           ),
           Positioned(
