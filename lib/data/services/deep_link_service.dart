@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import '../../config/app_config.dart';
 import '../../pages/feed/single_post_page.dart';
-import '../../pages/marketplace/product_detail_page.dart';
 import '../../pages/user/profile_page.dart';
 
 class DeepLinkService {
