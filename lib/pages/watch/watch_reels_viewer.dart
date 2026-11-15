@@ -54,10 +54,10 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
 
   void _preloadAround(int index) {
     for (var next = index + 1; next <= index + 2 && next < _controller.videos.length; next++) {
-      _getVideoController(next).catchError((error) {
-        debugPrint('Video preload failed: $error');
-        return Future<VideoPlayerController>.error(error);
-      });
+      _getVideoController(next).then<void>(
+        (_) {},
+        onError: (Object error) => debugPrint('Video preload failed: $error'),
+      );
     }
   }
 
@@ -94,7 +94,7 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
           builder: (context, value, _) {
             final durationMs = value.duration.inMilliseconds;
             final positionMs = value.position.inMilliseconds.clamp(0, durationMs > 0 ? durationMs : 0);
-            return Positioned.fill(
+            return SizedBox.expand(
               child: Container(
                 color: Colors.black.withValues(alpha: 0.28),
                 child: SafeArea(
