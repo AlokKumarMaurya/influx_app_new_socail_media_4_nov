@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:share_plus/share_plus.dart';
-import '../../config/app_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../controllers/marketplace_controller.dart';
 import '../../controllers/chat_controller.dart';
@@ -177,12 +175,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               backgroundColor: AppColors.cardBg,
               leading: _buildBackButton(),
               actions: [
-                // Share the same canonical URL that the Laravel backend handles.
-                IconButton(
-                  tooltip: 'Share product',
-                  icon: const Icon(Icons.share_outlined),
-                  onPressed: () => _shareProduct(product),
-                ),
                 _buildSaveButton(product),
                 const SizedBox(width: 8),
               ],
@@ -283,12 +275,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         return _buildBottomBar(product);
       }),
     );
-  }
-
-  // Keep the share URL in sync with Laravel's /link/product/{id} route.
-  Future<void> _shareProduct(ProductModel product) async {
-    final shareUrl = '${AppConfig.webBaseUrl}/link/product/${product.id}';
-    await Share.share(shareUrl, subject: product.title);
   }
 
   Widget _buildBackButton() {
