@@ -1,8 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 import '../../utils/app_theme.dart';
 import '../../controllers/watch_controller.dart';
 import '../../widgets/watch/watch_video_card.dart';
+import 'watch_reels_viewer.dart';
 import '../../widgets/feed/ad_card.dart';
 import '../../widgets/feed/suggested_section.dart';
 import '../../data/models/feed_item.dart';
@@ -17,6 +19,7 @@ class WatchPage extends StatefulWidget {
 class _WatchPageState extends State<WatchPage> {
   final ScrollController _scrollController = ScrollController();
   late WatchController controller;
+  final Map<int, VideoPlayerController> _activeVideoControllers = {};
 
   @override
   void initState() {
@@ -102,7 +105,16 @@ class _WatchPageState extends State<WatchPage> {
                           (v) => v.post.id == item.post?.id,
                         );
                         if (videoModel == null) return const SizedBox.shrink();
-                        return WatchVideoCard(video: videoModel);
+                        return WatchVideoCard(
+                          video: videoModel,
+                          onOpenFullScreen: () => Get.to(
+                            () => WatchReelsViewer(
+                              initialIndex: controller.videos.indexWhere((video) => video.mediaId == videoModel.mediaId),
+                              initialVideoController: _activeVideoControllers[videoModel.mediaId],
+                            ),
+                          ),
+                          onVideoControllerReady: (player) => _activeVideoControllers[videoModel.mediaId] = player,
+                        );
                       case FeedItemType.ad:
                         return AdCard(ad: item.ad!);
                       case FeedItemType.suggestedGroups:
