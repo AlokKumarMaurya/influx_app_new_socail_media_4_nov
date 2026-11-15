@@ -52,7 +52,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="https"
-                    android:host="REPLACE_WITH_PRODUCTION_LINK_HOST"
+                    android:host="influx.mhquickdev.com"
                     android:pathPrefix="/link/product/" />
             </intent-filter>
 
