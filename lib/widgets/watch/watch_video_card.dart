@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:video_player/video_player.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../utils/app_theme.dart';
@@ -26,7 +27,8 @@ import 'package:url_launcher/url_launcher.dart';
 class WatchVideoCard extends StatefulWidget {
   final WatchVideoModel video;
   final VoidCallback? onOpenFullScreen;
-  const WatchVideoCard({super.key, required this.video, this.onOpenFullScreen});
+  final ValueChanged<VideoPlayerController>? onVideoControllerReady;
+  const WatchVideoCard({super.key, required this.video, this.onOpenFullScreen, this.onVideoControllerReady});
 
   @override
   State<WatchVideoCard> createState() => _WatchVideoCardState();
@@ -293,6 +295,7 @@ class _WatchVideoCardState extends State<WatchVideoCard> {
               looping: true,
               enableFullScreen: false,
               onTap: widget.onOpenFullScreen,
+              onControllerReady: widget.onVideoControllerReady,
             ),
           ),
           Positioned(
