@@ -15,6 +15,7 @@ class VideoPlayerWidget extends StatefulWidget {
   final VoidCallback? onTap;
   final VideoPlayerController? sharedController;
   final ValueChanged<VideoPlayerController>? onControllerReady;
+  final bool hideControls;
 
   const VideoPlayerWidget({
     super.key,
@@ -26,6 +27,7 @@ class VideoPlayerWidget extends StatefulWidget {
     this.onTap,
     this.sharedController,
     this.onControllerReady,
+    this.hideControls = false,
   });
 
   @override
@@ -119,29 +121,35 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       return VisibilityDetector(
         key: Key(widget.videoUrl),
         onVisibilityChanged: _handleVisibilityChanged,
-        child: Stack(
-          children: [
-            Chewie(controller: _chewieController!),
-            Positioned.fill(
-              child: GestureDetector(
+        child: widget.hideControls
+            ? GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  if (widget.onTap != null) {
-                    widget.onTap!();
-                  } else if (widget.enableFullScreen) {
-                    _chewieController?.enterFullScreen();
-                    _chewieController?.play();
-                  } else {
-                    final controller = _chewieController?.videoPlayerController;
-                    if (controller == null) return;
-                    controller.value.isPlaying ? controller.pause() : controller.play();
-                  }
-                },
-                child: const SizedBox.expand(),
+                onTap: widget.onTap,
+                child: VideoPlayer(_videoPlayerController),
+              )
+            : Stack(
+                children: [
+                  Chewie(controller: _chewieController!),
+                  Positioned.fill(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        if (widget.onTap != null) {
+                          widget.onTap!();
+                        } else if (widget.enableFullScreen) {
+                          _chewieController?.enterFullScreen();
+                          _chewieController?.play();
+                        } else {
+                          final controller = _chewieController?.videoPlayerController;
+                          if (controller == null) return;
+                          controller.value.isPlaying ? controller.pause() : controller.play();
+                        }
+                      },
+                      child: const SizedBox.expand(),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       );
     } else {
       return Container(
