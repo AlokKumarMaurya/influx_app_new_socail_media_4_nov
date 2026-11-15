@@ -1177,18 +1177,18 @@ packages:
     dependency: "direct main"
     description:
       name: permission_handler
-      sha256: e6bcecadfe40df6b888141f23cbaf6ba6c3da49fb33f6ff887d060dd48544fbd
+      sha256: fe54465bcc62a4564c6e4db337bbaded6c0c0fa6e10487414436d163114784f6
       url: "https://pub.dev"
     source: hosted
-    version: "13.0.2"
+    version: "12.0.3"
   permission_handler_android:
     dependency: transitive
     description:
       name: permission_handler_android
-      sha256: baf93fbf80008c240b2cf5e6d62e9495ea7727fe327444d135c44bfff9af6b6e
+      sha256: "1e3bc410ca1bf84662104b100eb126e066cb55791b7451307f9708d4007350e6"
       url: "https://pub.dev"
     source: hosted
-    version: "14.1.1"
+    version: "13.0.1"
   permission_handler_apple:
     dependency: transitive
     description:
@@ -1773,10 +1773,11 @@ packages:
   video_thumbnail:
     dependency: "direct main"
     description:
-      name: video_thumbnail
-      sha256: "181a0c205b353918954a881f53a3441476b9e301641688a581e0c13f00dc588b"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: cfdd3cc599773aba4e8c866c4ccf1f7713e8af48
+      resolved-ref: cfdd3cc599773aba4e8c866c4ccf1f7713e8af48
+      url: "https://github.com/ameyanaik11/video_thumbnail.git"
+    source: git
     version: "0.5.6"
   visibility_detector:
     dependency: "direct main"

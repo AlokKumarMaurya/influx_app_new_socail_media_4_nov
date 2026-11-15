@@ -167,7 +167,9 @@ class _FanPageManagePageState extends State<FanPageManagePage> with SingleTicker
     Get.bottomSheet(
       StatefulBuilder(
         builder: (context, setSheetState) {
-          return Container(
+          return Material(
+            color: Colors.transparent,
+            child: Container(
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height * 0.85,
             ),
@@ -374,6 +376,7 @@ class _FanPageManagePageState extends State<FanPageManagePage> with SingleTicker
                 ],
               ),
             ),
+          ),
           );
         },
       ),

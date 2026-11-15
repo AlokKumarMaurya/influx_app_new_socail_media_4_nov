@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart' hide ThemeMode;
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'services/network_inspector.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,7 @@ import 'config/app_config.dart';
 
 import 'package:flutter_stripe/flutter_stripe.dart';
 
-import 'package:flutter_localizations/flutter_localizations.dart' hide GlobalMaterialLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart' hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
 import 'controllers/language_controller.dart';
 import 'l10n/app_localizations.dart';
 
@@ -34,7 +35,7 @@ void main() async {
   try {
     await Stripe.instance.applySettings();
   } catch (_) {}
-  
+
   // Register Global Services
   Get.put(ApiClient());
   Get.put(SettingsService());
@@ -52,7 +53,7 @@ void main() async {
 
   // Initialize Deep Linking System
   DeepLinkService().init();
-  
+
   runApp(const MyApp());
 }
 
@@ -63,7 +64,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final settingsController = Get.find<SettingsController>();
     final languageController = Get.find<LanguageController>();
-    
+
     return Obx(() {
       return GetMaterialApp(
         navigatorKey: NetworkInspector.navigatorKey,
