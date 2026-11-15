@@ -1,13 +1,15 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 import '../../controllers/watch_controller.dart';
 import '../../utils/app_theme.dart';
 import '../../widgets/common/video_player_widget.dart';
 
 class WatchReelsViewer extends StatefulWidget {
   final int initialIndex;
+  final VideoPlayerController? initialVideoController;
 
-  const WatchReelsViewer({super.key, required this.initialIndex});
+  const WatchReelsViewer({super.key, required this.initialIndex, this.initialVideoController});
 
   @override
   State<WatchReelsViewer> createState() => _WatchReelsViewerState();
@@ -17,6 +19,8 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
   late final PageController _pageController;
   late final WatchController _controller;
   int _currentIndex = 0;
+  final Map<int, Future<VideoPlayerController>> _preloadedControllers = {};
+  final Set<int> _ownedControllerIds = {};
 
   @override
   void initState() {
@@ -24,16 +28,44 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
     _controller = Get.find<WatchController>();
     _currentIndex = widget.initialIndex;
     _pageController = PageController(initialPage: widget.initialIndex);
+    _preloadAround(widget.initialIndex);
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    for (final mediaId in _ownedControllerIds) {
+      _preloadedControllers[mediaId]?.then((player) => player.dispose());
+    }
     super.dispose();
   }
 
+  Future<VideoPlayerController> _getVideoController(int index) async {
+    final video = _controller.videos[index];
+    if (index == widget.initialIndex && widget.initialVideoController != null) return widget.initialVideoController!;
+    return _preloadedControllers.putIfAbsent(video.mediaId, () async {
+      final player = VideoPlayerController.networkUrl(Uri.parse(video.videoUrl));
+      _ownedControllerIds.add(video.mediaId);
+      await player.initialize();
+      return player;
+    });
+  }
+
+  void _preloadAround(int index) {
+    for (var next = index + 1; next <= index + 2 && next < _controller.videos.length; next++) {
+      _getVideoController(next).catchError((error) {
+        debugPrint('Video preload failed: $error');
+        throw error;
+      });
+    }
+  }
+
   void _onPageChanged(int index) {
+    final previous = _currentIndex;
+    _getVideoController(previous).then((player) => player.pause());
+    _getVideoController(index).then((player) => player.play());
     setState(() => _currentIndex = index);
+    _preloadAround(index);
     if (index >= _controller.videos.length - 2) {
       _controller.loadMore();
     }
@@ -60,13 +92,20 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
             return Stack(
               fit: StackFit.expand,
               children: [
-                VideoPlayerWidget(
-                  key: ValueKey(video.mediaId),
-                  videoUrl: video.videoUrl,
-                  mediaId: video.mediaId,
-                  autoPlay: true,
-                  looping: true,
-                  enableFullScreen: false,
+                FutureBuilder<VideoPlayerController>(
+                  future: _getVideoController(index),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                    return VideoPlayerWidget(
+                      key: ValueKey(video.mediaId),
+                      videoUrl: video.videoUrl,
+                      mediaId: video.mediaId,
+                      autoPlay: index == _currentIndex,
+                      looping: true,
+                      enableFullScreen: false,
+                      sharedController: snapshot.data,
+                    );
+                  },
                 ),
                 SafeArea(
                   child: Align(
