@@ -13,6 +13,8 @@ class VideoPlayerWidget extends StatefulWidget {
   final bool looping;
   final bool enableFullScreen;
   final VoidCallback? onTap;
+  final VideoPlayerController? sharedController;
+  final ValueChanged<VideoPlayerController>? onControllerReady;
 
   const VideoPlayerWidget({
     super.key,
@@ -22,6 +24,8 @@ class VideoPlayerWidget extends StatefulWidget {
     this.looping = false,
     this.enableFullScreen = true,
     this.onTap,
+    this.sharedController,
+    this.onControllerReady,
   });
 
   @override
@@ -32,6 +36,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _videoPlayerController;
   ChewieController? _chewieController;
   bool _isVisible = false;
+  bool _ownsController = true;
 
   @override
   void initState() {
@@ -41,10 +46,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   Future<void> _initializePlayer() async {
     try {
-      _videoPlayerController = VideoPlayerController.networkUrl(
-        Uri.parse(widget.videoUrl),
-      );
-      await _videoPlayerController.initialize();
+      _ownsController = widget.sharedController == null;
+      _videoPlayerController = widget.sharedController ?? VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+      if (!_videoPlayerController.value.isInitialized) await _videoPlayerController.initialize();
+      widget.onControllerReady?.call(_videoPlayerController);
 
       _chewieController = ChewieController(
         videoPlayerController: _videoPlayerController,
@@ -84,8 +89,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   void dispose() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    _videoPlayerController.dispose();
     _chewieController?.dispose();
+    if (_ownsController) _videoPlayerController.dispose();
     super.dispose();
   }
 
