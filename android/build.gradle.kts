@@ -40,3 +40,24 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+// Stripe's Issuing push-provisioning artifact declares Google's private
+// play-services-tapandpay SDK as a runtime dependency. AGP 9's release lint
+// classpath resolves that runtime dependency even though this app only uses
+// standard Stripe payments and does not use Issuing push provisioning.
+// The TapAndPay SDK is not published to public Maven repositories, so remove
+// it from this Stripe library's metadata to keep release lint resolvable.
+subprojects {
+    if (name == "stripe_android") {
+        dependencies.components.withModule("com.stripe:stripe-android-issuing-push-provisioning") {
+            allVariants {
+                withDependencies {
+                    removeAll {
+                        it.group == "com.google.android.gms" &&
+                            it.name == "play-services-tapandpay"
+                    }
+                }
+            }
+        }
+    }
+}
