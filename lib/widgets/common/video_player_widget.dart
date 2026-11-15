@@ -11,6 +11,8 @@ class VideoPlayerWidget extends StatefulWidget {
   final int? mediaId;
   final bool autoPlay;
   final bool looping;
+  final bool enableFullScreen;
+  final VoidCallback? onTap;
 
   const VideoPlayerWidget({
     super.key,
@@ -18,6 +20,8 @@ class VideoPlayerWidget extends StatefulWidget {
     this.mediaId,
     this.autoPlay = false,
     this.looping = false,
+    this.enableFullScreen = true,
+    this.onTap,
   });
 
   @override
@@ -117,8 +121,16 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () {
-                  _chewieController?.enterFullScreen();
-                  _chewieController?.play();
+                  if (widget.onTap != null) {
+                    widget.onTap!();
+                  } else if (widget.enableFullScreen) {
+                    _chewieController?.enterFullScreen();
+                    _chewieController?.play();
+                  } else {
+                    final controller = _chewieController?.videoPlayerController;
+                    if (controller == null) return;
+                    controller.value.isPlaying ? controller.pause() : controller.play();
+                  }
                 },
                 child: const SizedBox.expand(),
               ),
