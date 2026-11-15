@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../utils/app_theme.dart';
 import '../../controllers/watch_controller.dart';
 import '../../widgets/watch/watch_video_card.dart';
+import 'watch_reels_viewer.dart';
 import '../../widgets/feed/ad_card.dart';
 import '../../widgets/feed/suggested_section.dart';
 import '../../data/models/feed_item.dart';
@@ -102,7 +103,16 @@ class _WatchPageState extends State<WatchPage> {
                           (v) => v.post.id == item.post?.id,
                         );
                         if (videoModel == null) return const SizedBox.shrink();
-                        return WatchVideoCard(video: videoModel);
+                        return WatchVideoCard(
+                          video: videoModel,
+                          onOpenFullScreen: () => Get.to(
+                            () => WatchReelsViewer(
+                              initialIndex: controller.videos.indexWhere(
+                                (video) => video.mediaId == videoModel.mediaId,
+                              ),
+                            ),
+                          ),
+                        );
                       case FeedItemType.ad:
                         return AdCard(ad: item.ad!);
                       case FeedItemType.suggestedGroups:
