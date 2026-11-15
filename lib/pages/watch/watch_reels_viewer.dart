@@ -94,10 +94,13 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
           builder: (context, value, _) {
             final durationMs = value.duration.inMilliseconds;
             final positionMs = value.position.inMilliseconds.clamp(0, durationMs > 0 ? durationMs : 0);
-            return SizedBox.expand(
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.28),
-                child: SafeArea(
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => setState(() => _showControls = false),
+              child: SizedBox.expand(
+                child: Container(
+                  color: Colors.black.withValues(alpha: 0.28),
+                  child: SafeArea(
                   child: Stack(
                     children: [
                       Align(
@@ -170,6 +173,7 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                         ),
                       ),
                     ],
+                  ),
                   ),
                 ),
               ),
