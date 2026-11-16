@@ -360,10 +360,10 @@ class MainScreen extends StatelessWidget {
       final List<Widget> pages = [
         FeedPage(onMenuTap: () => scaffoldKey.currentState?.openDrawer()),
         if (isWatchEnabled) const WatchPage(),
-        if (isCreatorCampaignsEnabled)
-          DiscoverHomePage(
-            onMenuTap: () => scaffoldKey.currentState?.openDrawer(),
-          ),
+        // if (isCreatorCampaignsEnabled)
+        //   DiscoverHomePage(
+        //     onMenuTap: () => scaffoldKey.currentState?.openDrawer(),
+        //   ),
         const FriendsPage(),
         const MallProductsPage(),
 
@@ -390,14 +390,14 @@ class MainScreen extends StatelessWidget {
               size: 24,
             ),
           ),
-        if (isCreatorCampaignsEnabled)
-          const Tab(
-            icon: HugeIcon(
-              icon: HugeIcons.strokeRoundedCompass01,
-              color: Colors.white,
-              size: 24,
-            ),
-          ),
+        // if (isCreatorCampaignsEnabled)
+        //   const Tab(
+        //     icon: HugeIcon(
+        //       icon: HugeIcons.strokeRoundedCompass01,
+        //       color: Colors.white,
+        //       size: 24,
+        //     ),
+        //   ),
         const Tab(
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedUserMultiple,
