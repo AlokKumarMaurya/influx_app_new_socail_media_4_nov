@@ -192,7 +192,6 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                               onPressed: () {
                                 final target = value.position - const Duration(seconds: 10);
                                 player.seekTo(target < Duration.zero ? Duration.zero : target);
-                                setState(() => _showControls = false);
                               },
                               icon: const Icon(Icons.replay_10),
                             ),
@@ -218,7 +217,6 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                               onPressed: () {
                                 final target = value.position + const Duration(seconds: 10);
                                 player.seekTo(target > value.duration ? value.duration : target);
-                                setState(() => _showControls = false);
                               },
                               icon: const Icon(Icons.forward_10),
                             ),
@@ -240,7 +238,6 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                                 activeColor: AppColors.primary,
                                 inactiveColor: Colors.white54,
                                 onChanged: durationMs == 0 ? null : (v) => player.seekTo(Duration(milliseconds: v.round())),
-                                onChangeEnd: (_) => setState(() => _showControls = false),
                               ),
                             ),
                             Text(_formatDuration(value.duration), style: const TextStyle(color: Colors.white, fontSize: 12)),
@@ -248,7 +245,6 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                               color: Colors.white,
                               onPressed: () {
                                 player.setVolume(value.volume > 0 ? 0 : 1);
-                                setState(() => _showControls = false);
                               },
                               icon: Icon(value.volume > 0 ? Icons.volume_up : Icons.volume_off),
                             ),
