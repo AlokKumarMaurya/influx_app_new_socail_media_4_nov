@@ -156,7 +156,7 @@ class _FeedPageState extends State<FeedPage> {
   Widget _buildFeedItem(FeedItem item) {
     switch (item.type) {
       case FeedItemType.post:
-        return PostCard(post: item.post!, isSingleView: true, onVideoTap: (media) => _openFeedVideo(item.post!, media), onVideoControllerReady: (player) { final media = item.post!.media.where((entry) => entry.fileType == 'video').firstOrNull; if (media != null) _activeFeedVideoControllers[media.id] = player; });
+        return PostCard(post: item.post!, isSingleView: true, onVideoTap: (media) => _openFeedVideo(item.post!, media), onVideoControllerReady: (player) { final videos = item.post!.media.where((entry) => entry.fileType == 'video').toList(); if (videos.isNotEmpty) _activeFeedVideoControllers[videos.first.id] = player; });
       case FeedItemType.ad:
         return AdCard(ad: item.ad!);
       case FeedItemType.suggestedGroups:
