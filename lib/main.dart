@@ -84,13 +84,9 @@ class MyApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         builder: (context, child) {
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              child ?? const SizedBox.shrink(),
-              const NetworkInspectorLauncher(),
-            ],
-          );
+          // Keep the debug HTTP inspector available internally without
+          // placing a floating launcher over the app UI.
+          return child ?? const SizedBox.shrink();
         },
         localeResolutionCallback: (deviceLocale, supportedLocales) {
           // Always honor the app's default/selected language instead of device system locale
