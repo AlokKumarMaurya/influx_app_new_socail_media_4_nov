@@ -57,23 +57,27 @@ class _AuthPageState extends State<AuthPage>
     return Scaffold(
       backgroundColor: AppColors.background,
       resizeToAvoidBottomInset: true,
-      body: Column(
-        children: [
-          _buildHeader(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-            child: _buildTabSwitcher(),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: TabBarView(
-                controller: _tabController,
-                children: [_buildLoginForm(), _buildRegisterForm()],
+      body: SafeArea(
+        top: false,
+        bottom: true,
+        child: Column(
+          children: [
+            _buildHeader(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              child: _buildTabSwitcher(),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [_buildLoginForm(), _buildRegisterForm()],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -152,7 +156,9 @@ class _AuthPageState extends State<AuthPage>
   Widget _buildLoginForm() {
     return SingleChildScrollView(
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      padding: const EdgeInsets.only(bottom: 28),
+      padding: EdgeInsets.only(
+        bottom: 24 + MediaQuery.of(context).viewPadding.bottom,
+      ),
       child: Column(
         children: [
         _buildTextField(
@@ -196,7 +202,8 @@ class _AuthPageState extends State<AuthPage>
     return SingleChildScrollView(
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: EdgeInsets.only(
-        bottom: 32 + MediaQuery.of(context).viewInsets.bottom,
+        // Keep the submit action clear of gesture/navigation system bars.
+        bottom: 24 + MediaQuery.of(context).viewPadding.bottom,
       ),
       child: Column(
         children: [
