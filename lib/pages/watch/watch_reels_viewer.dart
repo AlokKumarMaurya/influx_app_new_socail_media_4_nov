@@ -303,15 +303,6 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                     );
                   },
                 ),
-                Positioned.fill(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: () {
-                      setState(() => _showControls = true);
-                    },
-                    child: const SizedBox.expand(),
-                  ),
-                ),
                 _buildVideoControls(index),
                 SafeArea(
                   child: Align(
