@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:video_player/video_player.dart';
 import '../../controllers/settings_controller.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/url_utils.dart';
@@ -19,6 +20,7 @@ class PostCardMedia extends StatelessWidget {
   final bool isSingleView;
   final bool isShared;
   final ValueChanged<PostMediaModel>? onVideoTap;
+  final ValueChanged<VideoPlayerController>? onVideoControllerReady;
 
   const PostCardMedia({
     super.key,
@@ -26,6 +28,7 @@ class PostCardMedia extends StatelessWidget {
     this.isSingleView = false,
     this.isShared = false,
     this.onVideoTap,
+    this.onVideoControllerReady,
   });
 
   @override
@@ -44,7 +47,7 @@ class PostCardMedia extends StatelessWidget {
     final videos = post.media.where((m) => m.fileType == 'video').toList();
 
     if (videos.length == 1 && images.isEmpty) {
-      return _VideoPlayer(video: videos[0], isSingleView: isSingleView, onTap: onVideoTap == null ? null : () => onVideoTap!(videos[0]));
+      return _VideoPlayer(video: videos[0], isSingleView: isSingleView, onTap: onVideoTap == null ? null : () => onVideoTap!(videos[0]), onControllerReady: onVideoControllerReady);
     }
 
     return _MediaGrid(media: post.media, post: post, isShared: isShared, onVideoTap: onVideoTap);
@@ -266,8 +269,9 @@ class _VideoPlayer extends StatelessWidget {
   final PostMediaModel video;
   final bool isSingleView;
   final VoidCallback? onTap;
+  final ValueChanged<VideoPlayerController>? onControllerReady;
 
-  const _VideoPlayer({required this.video, required this.isSingleView, this.onTap});
+  const _VideoPlayer({required this.video, required this.isSingleView, this.onTap, this.onControllerReady});
 
   @override
   Widget build(BuildContext context) {
@@ -285,6 +289,7 @@ class _VideoPlayer extends StatelessWidget {
             looping: true,
             enableFullScreen: false,
             onTap: onTap,
+            onControllerReady: onControllerReady,
           ),
           Positioned(
             bottom: 10,
