@@ -13,7 +13,8 @@ class FeedReelsViewer extends StatefulWidget {
   final List<PostModel> posts;
   final int initialPostId;
   final int initialMediaId;
-  const FeedReelsViewer({super.key, required this.posts, required this.initialPostId, required this.initialMediaId});
+  final VideoPlayerController? initialVideoController;
+  const FeedReelsViewer({super.key, required this.posts, required this.initialPostId, required this.initialMediaId, this.initialVideoController});
   @override
   State<FeedReelsViewer> createState() => _FeedReelsViewerState();
 }
@@ -53,6 +54,9 @@ class _FeedReelsViewerState extends State<FeedReelsViewer> {
 
   Future<VideoPlayerController> _loadPlayer(int index) async {
     final media = _videos[index].media;
+    if (index == _currentIndex && media.id == widget.initialMediaId && widget.initialVideoController != null) {
+      return widget.initialVideoController!;
+    }
     return _players.putIfAbsent(media.id, () async {
       final player = VideoPlayerController.networkUrl(Uri.parse(UrlUtils.getFullUrl(media.filePath)));
       _ownedPlayerIds.add(media.id);
