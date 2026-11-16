@@ -96,7 +96,7 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
             final positionMs = value.position.inMilliseconds.clamp(0, durationMs > 0 ? durationMs : 0);
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () => setState(() => _showControls = false),
+              onTap: () {},
               child: SizedBox.expand(
                 child: Container(
                   color: Colors.black.withValues(alpha: 0.28),
@@ -123,8 +123,13 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                               iconSize: 54,
                               color: Colors.white,
                               onPressed: () {
-                                value.isPlaying ? player.pause() : player.play();
-                                setState(() => _showControls = false);
+                                if (value.isPlaying) {
+                                  player.pause();
+                                  setState(() => _showControls = true);
+                                } else {
+                                  player.play();
+                                  setState(() => _showControls = false);
+                                }
                               },
                               icon: Icon(value.isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled),
                             ),
@@ -218,14 +223,19 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                       enableFullScreen: false,
                       sharedController: snapshot.data,
                       hideControls: true,
-                      onTap: () => setState(() => _showControls = true),
+                      onTap: () {
+                        if (snapshot.data!.value.isPlaying) snapshot.data!.pause();
+                        setState(() => _showControls = true);
+                      },
                     );
                   },
                 ),
                 Positioned.fill(
                   child: GestureDetector(
                     behavior: HitTestBehavior.translucent,
-                    onTap: () => setState(() => _showControls = true),
+                    onTap: () {
+                      setState(() => _showControls = true);
+                    },
                     child: const SizedBox.expand(),
                   ),
                 ),
