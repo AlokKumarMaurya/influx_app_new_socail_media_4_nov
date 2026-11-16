@@ -344,7 +344,7 @@ class _MediaGrid extends StatelessWidget {
       return Column(children: [
         AspectRatio(
           aspectRatio: 16 / 9,
-          child: _MediaBox(media: media[0], allMedia: media, post: post, isShared: isShared),
+          child: _MediaBox(media: media[0], allMedia: media, post: post, isShared: isShared, onVideoTap: onVideoTap),
         ),
         const SizedBox(height: 2),
         AspectRatio(
