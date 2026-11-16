@@ -140,18 +140,20 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
 
                           const SizedBox(height: 14),
 
-                          Pinput(
-                            length: 6,
-                            controller: _verificationCodeController,
-                            keyboardType: TextInputType.number,
-                            textInputAction: TextInputAction.done,
-                            validator: (value) =>
-                            (value ?? "").length == 6
-                                ? null
-                                : "Enter valid OTP",
-                            closeKeyboardWhenCompleted: true,
-                            hapticFeedbackType:
-                            HapticFeedbackType.lightImpact,
+                          Material(
+                            color: Colors.transparent,
+                            child: Pinput(
+                              length: 6,
+                              controller: _verificationCodeController,
+                              keyboardType: TextInputType.number,
+                              textInputAction: TextInputAction.done,
+                              validator: (value) =>
+                                  (value ?? "").length == 6
+                                      ? null
+                                      : "Enter valid OTP",
+                              closeKeyboardWhenCompleted: true,
+                              hapticFeedbackType: HapticFeedbackType.lightImpact,
+                            ),
                           ),
 
                           const SizedBox(height: 24),
