@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 import '../../controllers/watch_controller.dart';
+import '../../data/models/watch_video_model.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/profile_controller.dart';
 import '../../pages/user/profile_page.dart';
