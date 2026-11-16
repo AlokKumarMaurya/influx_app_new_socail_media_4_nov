@@ -32,12 +32,14 @@ class PostCard extends StatefulWidget {
   final PostModel post;
   final bool isSingleView;
   final ValueChanged<PostMediaModel>? onVideoTap;
+  final ValueChanged<VideoPlayerController>? onVideoControllerReady;
 
   const PostCard({
     super.key,
     required this.post,
     this.isSingleView = false,
     this.onVideoTap,
+    this.onVideoControllerReady,
   });
 
   @override
@@ -97,7 +99,7 @@ class _PostCardState extends State<PostCard> with AutomaticKeepAliveClientMixin 
                 children: [
                   PostCardHeader(post: post, isSingleView: widget.isSingleView),
                   PostCardContent(post: post, isSingleView: widget.isSingleView),
-                  PostCardMedia(post: post, isSingleView: widget.isSingleView, onVideoTap: widget.onVideoTap),
+                  PostCardMedia(post: post, isSingleView: widget.isSingleView, onVideoTap: widget.onVideoTap, onVideoControllerReady: widget.onVideoControllerReady),
                   if (post.sharedPost != null) PostCardShared(shared: post.sharedPost!),
                   PostCardStats(post: post),
                   PostCardActionBar(post: post, isSingleView: widget.isSingleView),
