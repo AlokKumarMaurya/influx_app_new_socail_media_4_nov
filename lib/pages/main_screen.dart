@@ -41,12 +41,14 @@ class MainScreen extends StatelessWidget {
 
   void _showAddBottomSheet(BuildContext context) {
     Get.bottomSheet(
-      Container(
-        decoration: BoxDecoration(
-          color: AppColors.cardBg,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: SafeArea(
+      Material(
+        color: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.cardBg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: SafeArea(
           top: false,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
@@ -124,6 +126,7 @@ class MainScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
       isScrollControlled: true,
     );
