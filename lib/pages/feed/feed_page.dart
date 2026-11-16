@@ -9,6 +9,8 @@ import '../../widgets/feed/post_card.dart';
 import '../../widgets/feed/suggested_section.dart';
 import '../../widgets/feed/ad_card.dart';
 import '../../data/models/feed_item.dart';
+import '../../data/models/post_model.dart';
+import 'feed_reels_viewer.dart';
 
 class FeedPage extends StatefulWidget {
   final VoidCallback? onMenuTap;
@@ -144,10 +146,15 @@ class _FeedPageState extends State<FeedPage> {
     );
   }
 
+  void _openFeedVideo(PostModel post, PostMediaModel media) {
+    final videoPosts = controller.posts.where((candidate) => candidate.media.any((entry) => entry.fileType == 'video')).toList();
+    Get.to(() => FeedReelsViewer(posts: videoPosts, initialPostId: post.id, initialMediaId: media.id));
+  }
+
   Widget _buildFeedItem(FeedItem item) {
     switch (item.type) {
       case FeedItemType.post:
-        return PostCard(post: item.post!,isSingleView: true,);
+        return PostCard(post: item.post!, isSingleView: true, onVideoTap: (media) => _openFeedVideo(item.post!, media));
       case FeedItemType.ad:
         return AdCard(ad: item.ad!);
       case FeedItemType.suggestedGroups:
