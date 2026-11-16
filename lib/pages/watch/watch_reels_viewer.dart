@@ -2,6 +2,10 @@ import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 import '../../controllers/watch_controller.dart';
+import '../../controllers/auth_controller.dart';
+import '../../controllers/profile_controller.dart';
+import '../../pages/user/profile_page.dart';
+import '../../utils/url_utils.dart';
 import '../../utils/app_theme.dart';
 import '../../widgets/common/video_player_widget.dart';
 
@@ -75,6 +79,80 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
     }
   }
 
+
+  ProfileController _profileControllerFor(int userId) {
+    final tag = 'profile_$userId';
+    final controller = Get.isRegistered<ProfileController>(tag: tag)
+        ? Get.find<ProfileController>(tag: tag)
+        : Get.put(ProfileController(), tag: tag);
+    if (controller.profile.value == null && !controller.isProfileFetching) {
+      controller.loadProfile(userId);
+    }
+    return controller;
+  }
+
+  Widget _buildCreator(WatchVideoModel video) {
+    final user = video.post.user;
+    if (user == null) return const SizedBox.shrink();
+    final isOwnProfile = Get.find<AuthController>().user.value?.id == user.id;
+    final profileController = isOwnProfile ? null : _profileControllerFor(user.id);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: () => Get.to(() => ProfilePage(userId: user.id)),
+          child: CircleAvatar(
+            radius: 19,
+            backgroundColor: Colors.white24,
+            backgroundImage: user.avatar != null && user.avatar!.isNotEmpty
+                ? NetworkImage(UrlUtils.getFullUrl(user.avatar!))
+                : null,
+            child: user.avatar == null || user.avatar!.isEmpty
+                ? const Icon(Icons.person, color: Colors.white)
+                : null,
+          ),
+        ),
+        const SizedBox(width: 9),
+        Flexible(
+          child: GestureDetector(
+            onTap: () => Get.to(() => ProfilePage(userId: user.id)),
+            child: Text(
+              user.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                shadows: [Shadow(blurRadius: 8, color: Colors.black)],
+              ),
+            ),
+          ),
+        ),
+        if (!isOwnProfile && profileController != null)
+          Obx(() {
+            final profile = profileController.profile.value;
+            if (profile == null || profile.relation != 'none') {
+              return const SizedBox.shrink();
+            }
+            return Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: OutlinedButton(
+                onPressed: profileController.toggleFriendAction,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  side: const BorderSide(color: Colors.white),
+                  padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 5),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text('Follow', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            );
+          }),
+      ],
+    );
+  }
+
   String _formatDuration(Duration duration) {
     final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
@@ -96,7 +174,7 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
             final positionMs = value.position.inMilliseconds.clamp(0, durationMs > 0 ? durationMs : 0);
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () => setState(() => _showControls = false),
+              onTap: () {},
               child: SizedBox.expand(
                 child: Container(
                   color: Colors.black.withValues(alpha: 0.28),
@@ -114,7 +192,6 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                               onPressed: () {
                                 final target = value.position - const Duration(seconds: 10);
                                 player.seekTo(target < Duration.zero ? Duration.zero : target);
-                                setState(() => _showControls = false);
                               },
                               icon: const Icon(Icons.replay_10),
                             ),
@@ -123,8 +200,13 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                               iconSize: 54,
                               color: Colors.white,
                               onPressed: () {
-                                value.isPlaying ? player.pause() : player.play();
-                                setState(() => _showControls = false);
+                                if (value.isPlaying) {
+                                  player.pause();
+                                  setState(() => _showControls = true);
+                                } else {
+                                  player.play();
+                                  setState(() => _showControls = false);
+                                }
                               },
                               icon: Icon(value.isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled),
                             ),
@@ -135,7 +217,6 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                               onPressed: () {
                                 final target = value.position + const Duration(seconds: 10);
                                 player.seekTo(target > value.duration ? value.duration : target);
-                                setState(() => _showControls = false);
                               },
                               icon: const Icon(Icons.forward_10),
                             ),
@@ -157,7 +238,6 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                                 activeColor: AppColors.primary,
                                 inactiveColor: Colors.white54,
                                 onChanged: durationMs == 0 ? null : (v) => player.seekTo(Duration(milliseconds: v.round())),
-                                onChangeEnd: (_) => setState(() => _showControls = false),
                               ),
                             ),
                             Text(_formatDuration(value.duration), style: const TextStyle(color: Colors.white, fontSize: 12)),
@@ -165,7 +245,6 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                               color: Colors.white,
                               onPressed: () {
                                 player.setVolume(value.volume > 0 ? 0 : 1);
-                                setState(() => _showControls = false);
                               },
                               icon: Icon(value.volume > 0 ? Icons.volume_up : Icons.volume_off),
                             ),
@@ -201,7 +280,6 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
           onPageChanged: _onPageChanged,
           itemBuilder: (context, index) {
             final video = videos[index];
-            final user = video.post.user;
             return Stack(
               fit: StackFit.expand,
               children: [
@@ -218,16 +296,12 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                       enableFullScreen: false,
                       sharedController: snapshot.data,
                       hideControls: true,
-                      onTap: () => setState(() => _showControls = true),
+                      onTap: () {
+                        if (snapshot.data!.value.isPlaying) snapshot.data!.pause();
+                        setState(() => _showControls = true);
+                      },
                     );
                   },
-                ),
-                Positioned.fill(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: () => setState(() => _showControls = true),
-                    child: const SizedBox.expand(),
-                  ),
                 ),
                 _buildVideoControls(index),
                 SafeArea(
@@ -247,8 +321,7 @@ class _WatchReelsViewerState extends State<WatchReelsViewer> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (user?.name != null)
-                        Text(user!.name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, shadows: [Shadow(blurRadius: 8, color: Colors.black)])),
+                      _buildCreator(video),
                       if (video.post.content?.isNotEmpty == true) ...[
                         const SizedBox(height: 8),
                         Text(video.post.content!, maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 14, shadows: [Shadow(blurRadius: 8, color: Colors.black)])),
