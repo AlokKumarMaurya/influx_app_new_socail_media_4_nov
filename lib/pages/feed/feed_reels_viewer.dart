@@ -220,7 +220,7 @@ class _FeedReelsViewerState extends State<FeedReelsViewer> {
                 Positioned(right: 12, bottom: 42, child: Column(children: [
                   IconButton(onPressed: () => Get.find<FeedController>().toggleReaction(item.post.id, item.post.userReaction ?? 'like'),
                     icon: Icon(item.post.userReaction == null ? Icons.favorite_border : Icons.favorite, color: item.post.userReaction == null ? Colors.white : Colors.red, size: 30)),
-                  Text('\${item.post.reactionsCount}', style: const TextStyle(color: Colors.white)),
+                  Text('${item.post.reactionsCount}', style: const TextStyle(color: Colors.white)),
                 ])),
               ]);
             },
