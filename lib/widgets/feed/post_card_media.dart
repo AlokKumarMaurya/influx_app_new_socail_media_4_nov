@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:video_player/video_player.dart';
 import '../../controllers/settings_controller.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/url_utils.dart';
@@ -18,12 +19,16 @@ class PostCardMedia extends StatelessWidget {
   final PostModel post;
   final bool isSingleView;
   final bool isShared;
+  final ValueChanged<PostMediaModel>? onVideoTap;
+  final ValueChanged<VideoPlayerController>? onVideoControllerReady;
 
   const PostCardMedia({
     super.key,
     required this.post,
     this.isSingleView = false,
     this.isShared = false,
+    this.onVideoTap,
+    this.onVideoControllerReady,
   });
 
   @override
@@ -42,10 +47,10 @@ class PostCardMedia extends StatelessWidget {
     final videos = post.media.where((m) => m.fileType == 'video').toList();
 
     if (videos.length == 1 && images.isEmpty) {
-      return _VideoPlayer(video: videos[0], isSingleView: isSingleView);
+      return _VideoPlayer(video: videos[0], isSingleView: isSingleView, onTap: onVideoTap == null ? null : () => onVideoTap!(videos[0]), onControllerReady: onVideoControllerReady);
     }
 
-    return _MediaGrid(media: post.media, post: post, isShared: isShared);
+    return _MediaGrid(media: post.media, post: post, isShared: isShared, onVideoTap: onVideoTap);
   }
 }
 
@@ -263,8 +268,10 @@ class _LiveStreamPostCard extends StatelessWidget {
 class _VideoPlayer extends StatelessWidget {
   final PostMediaModel video;
   final bool isSingleView;
+  final VoidCallback? onTap;
+  final ValueChanged<VideoPlayerController>? onControllerReady;
 
-  const _VideoPlayer({required this.video, required this.isSingleView});
+  const _VideoPlayer({required this.video, required this.isSingleView, this.onTap, this.onControllerReady});
 
   @override
   Widget build(BuildContext context) {
@@ -280,6 +287,9 @@ class _VideoPlayer extends StatelessWidget {
             mediaId: video.id,
             autoPlay: isSingleView,
             looping: true,
+            enableFullScreen: false,
+            onTap: onTap,
+            onControllerReady: onControllerReady,
           ),
           Positioned(
             bottom: 10,
@@ -313,24 +323,25 @@ class _MediaGrid extends StatelessWidget {
   final List<PostMediaModel> media;
   final PostModel post;
   final bool isShared;
+  final ValueChanged<PostMediaModel>? onVideoTap;
 
-  const _MediaGrid({required this.media, required this.post, required this.isShared});
+  const _MediaGrid({required this.media, required this.post, required this.isShared, this.onVideoTap});
 
   @override
   Widget build(BuildContext context) {
     if (media.length == 1) {
       return AspectRatio(
         aspectRatio: 16 / 9,
-        child: _MediaBox(media: media[0], allMedia: media, post: post, isShared: isShared),
+        child: _MediaBox(media: media[0], allMedia: media, post: post, isShared: isShared, onVideoTap: onVideoTap),
       );
     }
     if (media.length == 2) {
       return AspectRatio(
         aspectRatio: 16 / 9,
         child: Row(children: [
-          Expanded(child: _MediaBox(media: media[0], allMedia: media, post: post, isShared: isShared)),
+          Expanded(child: _MediaBox(media: media[0], allMedia: media, post: post, isShared: isShared, onVideoTap: onVideoTap)),
           const SizedBox(width: 2),
-          Expanded(child: _MediaBox(media: media[1], allMedia: media, post: post, isShared: isShared)),
+          Expanded(child: _MediaBox(media: media[1], allMedia: media, post: post, isShared: isShared, onVideoTap: onVideoTap)),
         ]),
       );
     }
@@ -338,7 +349,7 @@ class _MediaGrid extends StatelessWidget {
       return Column(children: [
         AspectRatio(
           aspectRatio: 16 / 9,
-          child: _MediaBox(media: media[0], allMedia: media, post: post, isShared: isShared),
+          child: _MediaBox(media: media[0], allMedia: media, post: post, isShared: isShared, onVideoTap: onVideoTap),
         ),
         const SizedBox(height: 2),
         AspectRatio(
@@ -363,7 +374,7 @@ class _MediaGrid extends StatelessWidget {
       ),
       itemCount: media.length > 4 ? 4 : media.length,
       itemBuilder: (context, index) =>
-          _MediaBox(media: media[index], allMedia: media, post: post, isShared: isShared),
+          _MediaBox(media: media[index], allMedia: media, post: post, isShared: isShared, onVideoTap: onVideoTap),
     );
   }
 }
@@ -373,12 +384,14 @@ class _MediaBox extends StatelessWidget {
   final List<PostMediaModel> allMedia;
   final PostModel post;
   final bool isShared;
+  final ValueChanged<PostMediaModel>? onVideoTap;
 
   const _MediaBox({
     required this.media,
     required this.allMedia,
     required this.post,
     required this.isShared,
+    this.onVideoTap,
   });
 
   @override
@@ -387,6 +400,10 @@ class _MediaBox extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
+        if (media.fileType == 'video' && onVideoTap != null) {
+          onVideoTap!(media);
+          return;
+        }
         final index = allMedia.indexOf(media);
         Get.to(() => MediaViewerPage(
               media: allMedia,
