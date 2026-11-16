@@ -48,6 +48,7 @@ class _AuthPageState extends State<AuthPage>
     _registerEmailController.dispose();
     _registerPasswordController.dispose();
     _registerConfirmPasswordController.dispose();
+    _registerMobileNumberController.dispose();
     super.dispose();
   }
 
@@ -55,29 +56,24 @@ class _AuthPageState extends State<AuthPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 30),
-                  _buildTabSwitcher(),
-                  const SizedBox(height: 30),
-                  SizedBox(
-                    height: 520,
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [_buildLoginForm(), _buildRegisterForm()],
-                    ),
-                  ),
-                ],
+      resizeToAvoidBottomInset: true,
+      body: Column(
+        children: [
+          _buildHeader(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+            child: _buildTabSwitcher(),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: TabBarView(
+                controller: _tabController,
+                children: [_buildLoginForm(), _buildRegisterForm()],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -154,8 +150,11 @@ class _AuthPageState extends State<AuthPage>
   }
 
   Widget _buildLoginForm() {
-    return Column(
-      children: [
+    return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: const EdgeInsets.only(bottom: 28),
+      child: Column(
+        children: [
         _buildTextField(
           controller: _loginController,
           hint: 'email_or_username'.tr,
@@ -188,13 +187,19 @@ class _AuthPageState extends State<AuthPage>
             _loginPasswordController.text,
           );
         }),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildRegisterForm() {
-    return Column(
-      children: [
+    return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: EdgeInsets.only(
+        bottom: 32 + MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Column(
+        children: [
         Row(
           children: [
             Expanded(
@@ -308,7 +313,8 @@ class _AuthPageState extends State<AuthPage>
             passwordConfirmation: _registerConfirmPasswordController.text,
           );
         }),
-      ],
+        ],
+      ),
     );
   }
 
@@ -360,9 +366,14 @@ class _AuthPageState extends State<AuthPage>
         inputFormatters: inputFormatters,
         decoration: InputDecoration(
           hintText: hint,
+          isDense: true,
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: 42,
+            minHeight: 48,
+          ),
           prefixIcon: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: HugeIcon(icon: icon, color: AppColors.primary, size: 22),
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 10),
+            child: HugeIcon(icon: icon, color: AppColors.primary, size: 20),
           ),
           suffixIcon: isPassword
               ? IconButton(
@@ -384,10 +395,14 @@ class _AuthPageState extends State<AuthPage>
               : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 16,
+            horizontal: 10,
+            vertical: 14,
           ),
-          hintStyle: AppTextStyles.bodyMedium.copyWith(color: Colors.grey),
+          hintMaxLines: 1,
+          hintStyle: AppTextStyles.bodyMedium.copyWith(
+            color: Colors.grey,
+            fontSize: 14,
+          ),
         ),
       ),
     );
