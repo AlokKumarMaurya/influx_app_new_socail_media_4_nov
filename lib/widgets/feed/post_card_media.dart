@@ -327,7 +327,7 @@ class _MediaGrid extends StatelessWidget {
     if (media.length == 1) {
       return AspectRatio(
         aspectRatio: 16 / 9,
-        child: _MediaBox(media: media[0], allMedia: media, post: post, isShared: isShared),
+        child: _MediaBox(media: media[0], allMedia: media, post: post, isShared: isShared, onVideoTap: onVideoTap),
       );
     }
     if (media.length == 2) {
@@ -369,7 +369,7 @@ class _MediaGrid extends StatelessWidget {
       ),
       itemCount: media.length > 4 ? 4 : media.length,
       itemBuilder: (context, index) =>
-          _MediaBox(media: media[index], allMedia: media, post: post, isShared: isShared),
+          _MediaBox(media: media[index], allMedia: media, post: post, isShared: isShared, onVideoTap: onVideoTap),
     );
   }
 }
