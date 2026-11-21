@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 
 import '../../controllers/artist_profile_controller.dart';
 import '../../controllers/auth_controller.dart';
@@ -41,11 +42,18 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: _orange,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          top: false,
+          bottom: false,
+          child: Column(
           children: [
             _buildHeader(),
             Expanded(
@@ -69,40 +77,47 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
               ),
             ),
           ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildHeader() {
+    final topInset = MediaQuery.of(context).padding.top;
+
     return Container(
-      height: 104,
+      height: topInset + 68,
+      padding: EdgeInsets.only(top: topInset),
       color: _orange,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: IconButton(
-              onPressed: () => Get.back(),
-              icon: const Icon(
-                Icons.reply_rounded,
-                color: Colors.white,
-                size: 34,
+      child: SizedBox(
+        height: 68,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: IconButton(
+                onPressed: () => Get.back(),
+                icon: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: Colors.white,
+                  size: 26,
+                ),
+                tooltip: 'Back',
               ),
-              tooltip: 'Back',
             ),
-          ),
-          const Text(
-            'CREATE ARTIST',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 0.4,
+            const Text(
+              'CREATE ARTIST',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.2,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
