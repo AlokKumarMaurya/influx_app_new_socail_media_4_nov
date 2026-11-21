@@ -84,7 +84,7 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
           Align(
             alignment: Alignment.centerLeft,
             child: IconButton(
-              onPressed: Get.back,
+              onPressed: () => Get.back(),
               icon: const Icon(
                 Icons.reply_rounded,
                 color: Colors.white,
