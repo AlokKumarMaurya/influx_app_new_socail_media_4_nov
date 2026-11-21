@@ -57,6 +57,7 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildVisibilitySection(),
+                    _buildArtistBasicDetailsSection(),
                     _buildBodyDetailsSection(),
                     _buildInterestsSection(),
                     _buildComfortSection(),
@@ -214,6 +215,27 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
     );
   }
 
+  Widget _buildArtistBasicDetailsSection() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(28, 8, 28, 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle('Artist Basic Details'),
+          const SizedBox(height: 22),
+          _fieldLabel('Artist Name'),
+          const SizedBox(height: 10),
+          TextField(
+            controller: controller.artistNameController,
+            textCapitalization: TextCapitalization.words,
+            decoration: _inputDecoration(hint: 'Enter Artist Name'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBodyDetailsSection() {
     return Container(
       color: _sectionBackground,
@@ -366,16 +388,6 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _fieldLabel('Artist Basic Details'),
-          const SizedBox(height: 22),
-          _fieldLabel('Artist Name'),
-          const SizedBox(height: 10),
-          TextField(
-            controller: controller.artistNameController,
-            textCapitalization: TextCapitalization.words,
-            decoration: _inputDecoration(hint: 'Enter Artist Name'),
-          ),
-          const SizedBox(height: 24),
           _fieldLabel('Artist BIO'),
           const SizedBox(height: 10),
           TextField(
