@@ -1,17 +1,10 @@
-import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
-import 'package:hugeicons/hugeicons.dart';
+import 'package:material_ui/material_ui.dart';
 
+import '../../controllers/artist_profile_controller.dart';
 import '../../controllers/auth_controller.dart';
-import '../../controllers/user_settings_controller.dart';
 import '../../utils/app_theme.dart';
-import '../creator/creator_dashboard_page.dart';
-import 'settings/kyc_verification_page.dart';
 
-/// A single entry point for users who want to enable their artist/creator profile.
-///
-/// The backend currently exposes this as the existing professional-profile
-/// upgrade flow. KYC approval is required before the upgrade can be submitted.
 class ArtistProfilePage extends StatefulWidget {
   const ArtistProfilePage({super.key});
 
@@ -20,396 +13,148 @@ class ArtistProfilePage extends StatefulWidget {
 }
 
 class _ArtistProfilePageState extends State<ArtistProfilePage> {
-  late final UserSettingsController _settingsController;
-  late final AuthController _authController;
+  late final ArtistProfileController controller;
+
+  static const Color _orange = Color(0xFFEB8428);
+  static const Color _green = Color(0xFF4B8B2E);
+  static const Color _purple = Color(0xFF45478F);
+  static const Color _sectionBackground = Color(0xFFF5F6FA);
+  static const Color _muted = Color(0xFF9CA3AF);
+  static const Color _border = Color(0xFFE1E4EA);
 
   @override
   void initState() {
     super.initState();
-    _settingsController = Get.find<UserSettingsController>();
-    _authController = Get.find<AuthController>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _settingsController.fetchProfessionalStatus();
-    });
+    controller = Get.put(ArtistProfileController());
+
+    final user = Get.find<AuthController>().user.value;
+    controller.artistNameController.text = user?.name ?? '';
+    controller.phoneNumberController.text = user?.phone ?? '';
   }
 
-  Future<void> _createArtistProfile() async {
-    await _settingsController.upgradeToCreator();
-    await _settingsController.fetchProfessionalStatus();
-    await _settingsController.refreshProfile();
+  @override
+  void dispose() {
+    if (Get.isRegistered<ArtistProfileController>()) {
+      Get.delete<ArtistProfileController>();
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text('Create Artist Profile', style: AppTextStyles.h3),
-        backgroundColor: AppColors.cardBg,
-        elevation: 0,
-        scrolledUnderElevation: 0,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildVisibilitySection(),
+                    _buildBodyDetailsSection(),
+                    _buildInterestsSection(),
+                    _buildComfortSection(),
+                    _buildPhoneSection(),
+                    _buildLanguagesSection(),
+                    _buildArtistBioSection(),
+                    _buildSubmitSection(),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-      body: Obx(() {
-        final user = _authController.user.value;
-        final isCreator = _settingsController.profileType.value == 'creator';
-        final isBusiness =
-            _settingsController.profileType.value == 'business' ||
-            _settingsController.businessStatus.value == 'approved';
-        final isBusinessPending =
-            _settingsController.businessStatus.value == 'pending';
-        final isKycApproved = _settingsController.kycStatus.value == 'approved';
-
-        return RefreshIndicator(
-          onRefresh: _settingsController.fetchProfessionalStatus,
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(20),
-            children: [
-              _buildHero(isCreator),
-              const SizedBox(height: 20),
-              _buildAccountCard(
-                name: user?.name ?? '',
-                username: user?.username ?? '',
-                email: user?.email ?? '',
-              ),
-              const SizedBox(height: 20),
-              _buildBenefits(),
-              const SizedBox(height: 24),
-              if (isCreator)
-                _buildStatusCard(
-                  icon: HugeIcons.strokeRoundedTick01,
-                  title: 'Your artist profile is active',
-                  message:
-                      'Your account is already enabled as a creator. You can open your creator dashboard to manage your performance.',
-                  color: Colors.green,
-                )
-              else if (isBusiness || isBusinessPending)
-                _buildStatusCard(
-                  icon: HugeIcons.strokeRoundedClock01,
-                  title: isBusinessPending
-                      ? 'Business profile under review'
-                      : 'Business profile already active',
-                  message:
-                      'This account currently has a business profile. Artist profile creation is not available for this account state.',
-                  color: Colors.orange,
-                )
-              else if (!isKycApproved)
-                _buildStatusCard(
-                  icon: HugeIcons.strokeRoundedShield01,
-                  title: 'Identity verification required',
-                  message:
-                      'Complete identity verification before creating an artist profile. Once your KYC is approved, return here to continue.',
-                  color: AppColors.primary,
-                )
-              else
-                _buildStatusCard(
-                  icon: HugeIcons.strokeRoundedUserMultiple02,
-                  title: 'You are ready to become an artist',
-                  message:
-                      'Your identity is verified. Continue to enable creator tools and make your account discoverable as an artist.',
-                  color: AppColors.primary,
-                ),
-              const SizedBox(height: 20),
-              if (isCreator)
-                SizedBox(
-                  height: 54,
-                  child: ElevatedButton.icon(
-                    onPressed: () =>
-                        Get.to(() => const CreatorDashboardPage()),
-                    icon: const HugeIcon(
-                      icon: HugeIcons.strokeRoundedChartHistogram,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    label: const Text('Open Creator Dashboard'),
-                    style: _primaryButtonStyle(),
-                  ),
-                )
-              else if (!isBusiness && !isBusinessPending && !isKycApproved)
-                SizedBox(
-                  height: 54,
-                  child: OutlinedButton.icon(
-                    onPressed: () =>
-                        Get.to(() => const KycVerificationPage()),
-                    icon: HugeIcon(
-                      icon: HugeIcons.strokeRoundedShield01,
-                      color: AppColors.primary,
-                      size: 20,
-                    ),
-                    label: Text(
-                      'Complete identity verification',
-                      style: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: AppColors.primary),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                  ),
-                )
-              else if (!isBusiness && !isBusinessPending)
-                SizedBox(
-                  height: 54,
-                  child: ElevatedButton(
-                    onPressed: _settingsController.isLoading.value
-                        ? null
-                        : _createArtistProfile,
-                    style: _primaryButtonStyle(),
-                    child: _settingsController.isLoading.value
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Text('Create Artist Profile'),
-                  ),
-                ),
-              const SizedBox(height: 24),
-              Text(
-                'Your existing account, posts, followers and profile details stay connected. This step enables the creator profile type using the platform’s professional-profile process.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
-        );
-      }),
     );
   }
 
-  Widget _buildHero(bool isCreator) {
+  Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primary,
-            AppColors.primary.withValues(alpha: 0.78),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
+      height: 104,
+      color: _orange,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: IconButton(
+              onPressed: Get.back,
+              icon: const Icon(
+                Icons.reply_rounded,
+                color: Colors.white,
+                size: 34,
+              ),
+              tooltip: 'Back',
+            ),
+          ),
+          const Text(
+            'CREATE ARTIST',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.4,
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildVisibilitySection() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(28, 34, 28, 28),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(13),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.18),
-              shape: BoxShape.circle,
+          const Text(
+            'Create Artist',
+            style: TextStyle(
+              fontSize: 38,
+              height: 1.15,
+              fontWeight: FontWeight.w800,
+              color: Colors.black,
             ),
-            child: const HugeIcon(
-              icon: HugeIcons.strokeRoundedUserMultiple02,
-              color: Colors.white,
-              size: 30,
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 8, bottom: 42),
+            width: 92,
+            height: 5,
+            decoration: BoxDecoration(
+              color: _purple,
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          const Text(
+            "Select Person's",
+            style: TextStyle(
+              fontSize: 21,
+              fontWeight: FontWeight.w800,
+              color: Colors.black,
             ),
           ),
           const SizedBox(height: 18),
-          Text(
-            isCreator ? 'Your Artist Profile' : 'Build your artist presence',
-            style: AppTextStyles.h2.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            isCreator
-                ? 'Your creator tools are ready.'
-                : 'Turn your existing account into a creator profile and grow your audience.',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: Colors.white.withValues(alpha: 0.9),
-              height: 1.45,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAccountCard({
-    required String name,
-    required String username,
-    required String email,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppColors.textSecondary.withValues(alpha: 0.12),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Account that will become your artist profile',
-              style: AppTextStyles.bodyMedium.copyWith(
-                fontWeight: FontWeight.w700,
-                color: AppColors.textMain,
-              )),
-          const SizedBox(height: 14),
-          _accountLine(HugeIcons.strokeRoundedUser, name),
-          if (username.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            _accountLine(Icons.alternate_email, '@$username'),
-          ],
-          if (email.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            _accountLine(HugeIcons.strokeRoundedMail01, email),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _accountLine(dynamic icon, String value) {
-    return Row(
-      children: [
-        icon is IconData
-            ? Icon(icon, color: AppColors.primary, size: 19)
-            : HugeIcon(icon: icon, color: AppColors.primary, size: 19),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textMain,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBenefits() {
-    final benefits = [
-      (
-        HugeIcons.strokeRoundedChartHistogram,
-        'Creator insights',
-        'Access creator performance and audience analytics.',
-      ),
-      (
-        HugeIcons.strokeRoundedMegaphone02,
-        'Campaign opportunities',
-        'Explore creator campaigns and collaboration opportunities.',
-      ),
-      (
-        HugeIcons.strokeRoundedUserGroup,
-        'Creator discovery',
-        'Make your account available in creator discovery.',
-      ),
-    ];
-
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'What you get as an artist',
-            style: AppTextStyles.h3.copyWith(color: AppColors.textMain),
-          ),
-          const SizedBox(height: 16),
-          ...benefits.map(
-            (benefit) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HugeIcon(
-                    icon: benefit.$1,
-                    color: AppColors.primary,
-                    size: 22,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          benefit.$2,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textMain,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          benefit.$3,
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatusCard({
-    required dynamic icon,
-    required String title,
-    required String message,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.22)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          HugeIcon(icon: icon, color: color, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Obx(
+            () => Column(
               children: [
-                Text(
-                  title,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textMain,
-                  ),
+                _visibilityOption(
+                  value: 'Public',
+                  description: 'All hmetv users see your details',
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  message,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
-                    height: 1.45,
-                  ),
+                _visibilityOption(
+                  value: 'Private',
+                  description: 'Only your friends see your details',
+                ),
+                _visibilityOption(
+                  value: 'Only Me',
+                  description: 'Only you see your details',
                 ),
               ],
             ),
@@ -419,18 +164,495 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
     );
   }
 
-  ButtonStyle _primaryButtonStyle() {
-    return ElevatedButton.styleFrom(
-      backgroundColor: AppColors.primary,
-      foregroundColor: Colors.white,
-      disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+  Widget _visibilityOption({
+    required String value,
+    required String description,
+  }) {
+    final selected = controller.selectedVisibility.value == value;
+    return InkWell(
+      onTap: () => controller.selectedVisibility.value = value,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 9),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              selected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
+              color: _purple,
+              size: 25,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: _muted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-      elevation: 0,
-      textStyle: const TextStyle(
-        fontSize: 15,
+    );
+  }
+
+  Widget _buildBodyDetailsSection() {
+    return Container(
+      color: _sectionBackground,
+      padding: const EdgeInsets.fromLTRB(24, 34, 24, 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle('Artist Body Details'),
+          const SizedBox(height: 32),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _dropdownField(
+                  label: 'Artist Gender',
+                  selected: controller.selectedGender,
+                  options: ArtistProfileController.genderOptions,
+                  hint: 'Select Gender',
+                ),
+              ),
+              const SizedBox(width: 18),
+              Expanded(
+                child: _dropdownField(
+                  label: 'Bust / Chest',
+                  selected: controller.selectedBustChest,
+                  options: ArtistProfileController.bustChestOptions,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 22),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _dropdownField(
+                  label: 'Hip',
+                  selected: controller.selectedHip,
+                  options: ArtistProfileController.hipOptions,
+                ),
+              ),
+              const SizedBox(width: 18),
+              Expanded(
+                child: _dropdownField(
+                  label: 'Eye Color',
+                  selected: controller.selectedEyeColor,
+                  options: ArtistProfileController.eyeColorOptions,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 22),
+          _dropdownField(
+            label: 'Hair Colors',
+            selected: controller.selectedHairColor,
+            options: ArtistProfileController.hairColorOptions,
+          ),
+          const SizedBox(height: 22),
+          _dropdownField(
+            label: 'Body Type',
+            selected: controller.selectedBodyType,
+            options: ArtistProfileController.bodyTypeOptions,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInterestsSection() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(24, 30, 24, 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle('Artist Interests In'),
+          const SizedBox(height: 22),
+          _multiSelectChips(
+            options: ArtistProfileController.artistInterestOptions,
+            selected: controller.selectedInterests,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildComfortSection() {
+    return Container(
+      color: _sectionBackground,
+      padding: const EdgeInsets.fromLTRB(24, 30, 24, 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle('Comfortable with on Screen'),
+          const SizedBox(height: 22),
+          _multiSelectChips(
+            options: ArtistProfileController.onScreenComfortOptions,
+            selected: controller.selectedOnScreenComfort,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPhoneSection() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(28, 26, 28, 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _fieldLabel('Phone Number'),
+          const SizedBox(height: 12),
+          TextField(
+            controller: controller.phoneNumberController,
+            keyboardType: TextInputType.phone,
+            style: const TextStyle(fontSize: 17, color: Colors.black87),
+            decoration: _inputDecoration(
+              hint: 'Enter Phone Number',
+              prefix: const Icon(Icons.phone, color: _muted),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLanguagesSection() {
+    return Container(
+      color: _sectionBackground,
+      padding: const EdgeInsets.fromLTRB(24, 30, 24, 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle('Languages'),
+          const SizedBox(height: 22),
+          _multiSelectChips(
+            options: ArtistProfileController.languageOptions,
+            selected: controller.selectedLanguages,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArtistBioSection() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(28, 30, 28, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _fieldLabel('Artist Basic Details'),
+          const SizedBox(height: 22),
+          _fieldLabel('Artist Name'),
+          const SizedBox(height: 10),
+          TextField(
+            controller: controller.artistNameController,
+            textCapitalization: TextCapitalization.words,
+            decoration: _inputDecoration(hint: 'Enter Artist Name'),
+          ),
+          const SizedBox(height: 24),
+          _fieldLabel('Artist BIO'),
+          const SizedBox(height: 10),
+          TextField(
+            controller: controller.artistBioController,
+            minLines: 5,
+            maxLines: 7,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: _inputDecoration(hint: 'Write a message....'),
+          ),
+          const SizedBox(height: 24),
+          _dropdownField(
+            label: 'Manage By',
+            selected: controller.selectedManagedBy,
+            options: ArtistProfileController.managedByOptions,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubmitSection() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(28, 8, 28, 36),
+      child: SizedBox(
+        height: 64,
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: _submitForm,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _green,
+            foregroundColor: Colors.white,
+            elevation: 5,
+            shadowColor: _green.withValues(alpha: 0.25),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(13),
+            ),
+          ),
+          child: const Text(
+            'SUBMIT',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.4,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _dropdownField({
+    required String label,
+    required RxString selected,
+    required List<String> options,
+    String hint = 'Select',
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _fieldLabel(label),
+        const SizedBox(height: 10),
+        Obx(
+          () => DropdownButtonFormField<String>(
+            value: selected.value.isEmpty ? null : selected.value,
+            isExpanded: true,
+            icon: const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: _orange,
+              size: 30,
+            ),
+            hint: Text(
+              hint,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: _muted, fontSize: 16),
+            ),
+            style: const TextStyle(color: Colors.black87, fontSize: 16),
+            decoration: _inputDecoration(),
+            items: options
+                .map(
+                  (option) => DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(
+                      option,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                )
+                .toList(),
+            onChanged: (value) {
+              if (value != null) selected.value = value;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _multiSelectChips({
+    required List<String> options,
+    required RxList<String> selected,
+  }) {
+    return Obx(
+      () => Wrap(
+        spacing: 9,
+        runSpacing: 10,
+        children: options.map((option) {
+          final isSelected = selected.contains(option);
+          return InkWell(
+            borderRadius: BorderRadius.circular(30),
+            onTap: () => controller.toggleSelection(selected, option),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 140),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 13,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                color: isSelected ? _green : _sectionBackground,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: isSelected ? _green : _muted,
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    isSelected
+                        ? Icons.check_circle_outline
+                        : Icons.radio_button_unchecked,
+                    size: 22,
+                    color: isSelected ? Colors.white : _muted,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    option,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: isSelected ? Colors.white : _muted,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _sectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 25,
         fontWeight: FontWeight.w800,
+        color: Colors.black,
+      ),
+    );
+  }
+
+  Widget _fieldLabel(String label) {
+    return Text(
+      label,
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        color: Colors.black,
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration({
+    String? hint,
+    Widget? prefix,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: _muted, fontSize: 16),
+      prefixIcon: prefix,
+      filled: true,
+      fillColor: _sectionBackground,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 18,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: _border, width: 1.4),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: _orange, width: 1.6),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: _border),
+      ),
+    );
+  }
+
+  void _submitForm() {
+    if (!controller.validateForm()) return;
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(26, 34, 26, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 86,
+                width: 86,
+                decoration: const BoxDecoration(
+                  color: _green,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_rounded,
+                  color: Colors.white,
+                  size: 54,
+                ),
+              ),
+              const SizedBox(height: 26),
+              const Text(
+                'Details Captured!',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Your artist profile details are ready. Saving and profile creation will be enabled when the artist APIs are integrated in the next update.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.45,
+                  color: Color(0xFF64748B),
+                ),
+              ),
+              const SizedBox(height: 26),
+              SizedBox(
+                width: 220,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _green,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'OKAY',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
