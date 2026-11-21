@@ -397,7 +397,7 @@ class MainScreen extends StatelessWidget {
           ),
         const Tab(
           icon: HugeIcon(
-            icon: HugeIcons.strokeRoundedClapperboard,
+            icon: HugeIcons.strokeRoundedUserMultiple,
             color: Colors.white,
             size: 24,
           ),
