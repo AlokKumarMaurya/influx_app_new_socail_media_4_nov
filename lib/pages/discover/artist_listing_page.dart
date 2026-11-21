@@ -234,18 +234,18 @@ class _ArtistListingPageState extends State<ArtistListingPage> {
       decoration: BoxDecoration(
         color: const Color(0xFFEAF6E5),
         borderRadius: BorderRadius.circular(7),
-        border: Border.all(color: _ArtistListingPageState._green, width: 1),
+        border: Border.all(color: ArtistListingPage._green, width: 1),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: value.isEmpty ? null : value,
           hint: Text(
             label,
-            style: const TextStyle(color: _green, fontSize: 13),
+            style: const TextStyle(color: ArtistListingPage._green, fontSize: 13),
           ),
-          icon: const Icon(Icons.keyboard_arrow_down, color: _green),
+          icon: const Icon(Icons.keyboard_arrow_down, color: ArtistListingPage._green),
           isDense: true,
-          style: const TextStyle(color: _green, fontSize: 13),
+          style: const TextStyle(color: ArtistListingPage._green, fontSize: 13),
           items: [
             DropdownMenuItem<String>(
               value: '',
@@ -271,7 +271,7 @@ class _ArtistListingPageState extends State<ArtistListingPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.person_search_outlined, size: 54, color: _muted),
+            Icon(Icons.person_search_outlined, size: 54, color: ArtistListingPage._muted),
             const SizedBox(height: 12),
             Text('No artists found', style: AppTextStyles.h3),
             const SizedBox(height: 6),
@@ -393,9 +393,9 @@ class _ArtistCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (artist.coverImage != null && artist.coverImage!.isNotEmpty)
+            if ((artist.coverImage ?? artist.profileImage)?.isNotEmpty == true)
               Image.network(
-                artist.coverImage!,
+                (artist.coverImage ?? artist.profileImage)!,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => _coverPlaceholder(),
               )
