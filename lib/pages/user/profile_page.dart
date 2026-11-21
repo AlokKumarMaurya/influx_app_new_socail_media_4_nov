@@ -22,6 +22,7 @@ import '../marketplace/seller_shop_page.dart';
 import 'badge_shop_page.dart';
 import '../../controllers/feature_controller.dart';
 import '../../widgets/profile_live_streams_tab.dart';
+import '../creator/artist_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final int? userId;
@@ -812,6 +813,16 @@ class _ProfilePageState extends State<ProfilePage>
               _buildSquareButton(HugeIcons.strokeRoundedMoreHorizontal, () {}),
             ],
           ),
+          if (profile.isOwner &&
+              profile.profileType != 'creator' &&
+              profile.profileType != 'business') ...[
+            const SizedBox(height: 10),
+            _buildPrimaryAction(
+              HugeIcons.strokeRoundedUserMultiple02,
+              'Create Artist Profile',
+              () => Get.to(() => const ArtistProfilePage()),
+            ),
+          ],
         ],
       ),
     ));
