@@ -193,7 +193,7 @@ class ArtistListingController extends GetxController {
 
     currentPage.value = 1;
     totalRecords.value = result.length;
-    totalPages.value = (result.length / pageSize).ceil().clamp(1, 999);
+    totalPages.value = (result.length / pageSize).ceil().clamp(1, 999).toInt();
     visibleArtists.assignAll(result.take(pageSize));
     isLoading.value = false;
   }
