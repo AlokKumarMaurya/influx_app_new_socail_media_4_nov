@@ -77,7 +77,7 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
               const SizedBox(height: 24),
               if (isCreator)
                 _buildStatusCard(
-                  icon: HugeIcons.strokeRoundedCheckmarkCircle02,
+                  icon: HugeIcons.strokeRoundedTick01,
                   title: 'Your artist profile is active',
                   message:
                       'Your account is already enabled as a creator. You can open your creator dashboard to manage your performance.',
@@ -85,7 +85,7 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
                 )
               else if (isBusiness || isBusinessPending)
                 _buildStatusCard(
-                  icon: HugeIcons.strokeRoundedInformationCircle,
+                  icon: HugeIcons.strokeRoundedClock01,
                   title: isBusinessPending
                       ? 'Business profile under review'
                       : 'Business profile already active',
@@ -103,7 +103,7 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
                 )
               else
                 _buildStatusCard(
-                  icon: HugeIcons.strokeRoundedSparkles,
+                  icon: HugeIcons.strokeRoundedUserMultiple02,
                   title: 'You are ready to become an artist',
                   message:
                       'Your identity is verified. Continue to enable creator tools and make your account discoverable as an artist.',
@@ -212,7 +212,7 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
               shape: BoxShape.circle,
             ),
             child: const HugeIcon(
-              icon: HugeIcons.strokeRoundedUserStar01,
+              icon: HugeIcons.strokeRoundedUserMultiple02,
               color: Colors.white,
               size: 30,
             ),
@@ -266,7 +266,7 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
           _accountLine(HugeIcons.strokeRoundedUser, name),
           if (username.isNotEmpty) ...[
             const SizedBox(height: 10),
-            _accountLine(HugeIcons.strokeRoundedAt, '@$username'),
+            _accountLine(Icons.alternate_email, '@$username'),
           ],
           if (email.isNotEmpty) ...[
             const SizedBox(height: 10),
@@ -280,7 +280,9 @@ class _ArtistProfilePageState extends State<ArtistProfilePage> {
   Widget _accountLine(dynamic icon, String value) {
     return Row(
       children: [
-        HugeIcon(icon: icon, color: AppColors.primary, size: 19),
+        icon is IconData
+            ? Icon(icon, color: AppColors.primary, size: 19)
+            : HugeIcon(icon: icon, color: AppColors.primary, size: 19),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
