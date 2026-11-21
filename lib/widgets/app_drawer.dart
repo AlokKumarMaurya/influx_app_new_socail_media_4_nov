@@ -25,6 +25,7 @@ import '../pages/threads/threads_feed_page.dart';
 import '../pages/feed/search_page.dart';
 import '../pages/events/events_page.dart';
 import '../pages/creator/creator_dashboard_page.dart';
+import '../pages/creator/artist_profile_page.dart';
 import '../pages/custom_page/custom_page_view.dart';
 import '../pages/fan_page/fan_pages_list_page.dart';
 import '../pages/fan_page/fan_page_inbox_page.dart';
@@ -122,6 +123,16 @@ class AppDrawer extends StatelessWidget {
                     Get.to(() => const ProfilePage());
                   },
                 ),
+                if (authController.user.value?.profileType != 'creator' &&
+                    authController.user.value?.profileType != 'business')
+                  _buildDrawerItem(
+                    HugeIcons.strokeRoundedUserMultiple02,
+                    'Create Artist Profile',
+                    () {
+                      Navigator.pop(context);
+                      Get.to(() => const ArtistProfilePage());
+                    },
+                  ),
                 _buildDrawerItem(
                   HugeIcons.strokeRoundedTelephone,
                   'call_logs'.tr,

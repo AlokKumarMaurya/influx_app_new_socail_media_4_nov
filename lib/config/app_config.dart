@@ -4,7 +4,7 @@ class AppConfig {
   static const String appName = 'Hme Company';
 
   // Base URL for the API
-  static const String baseUrl = 'https://staging.hmecompany.com/api';
+  static const String baseUrl = 'https://hmecompany.com/api';//https://hmecompany.com/
 
   // Separate customer mall catalogue API.
   static const String mallBaseUrl = 'https://mall.hmecompany.com/api';
@@ -12,10 +12,10 @@ class AppConfig {
 
   // Deep Linking Configuration:
   // 1. webDomain: Set your web domain without protocol (e.g. '127.0.0.1:8000', 'influx.com', or 'social.mydomain.com')
-  static const String webDomain = 'influx.mhquickdev.com';
+  static const String webDomain = 'hmecompany.com';
 
   // 2. deepLinkScheme: Custom URL scheme for opening the app directly (e.g. 'influx://')
-  static const String deepLinkScheme = 'influx';
+  static const String deepLinkScheme = 'hmecompany';
 
   static const String appVersion = '2.0.0';
 
