@@ -278,7 +278,7 @@ class _ArtistListingPageState extends State<ArtistListingPage> {
             Text(
               'Try changing or clearing your filters.',
               textAlign: TextAlign.center,
-              style: AppTextStyles.bodySmall.copyWith(color: _muted),
+              style: AppTextStyles.bodySmall.copyWith(color: ArtistListingPage._muted),
             ),
             const SizedBox(height: 12),
             OutlinedButton(
