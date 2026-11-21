@@ -49,7 +49,9 @@ class _ArtistListingPageState extends State<ArtistListingPage> {
       body: SafeArea(
         child: Column(
           children: [
+            SizedBox(height: 12,),
             _buildFilters(),
+            SizedBox(height: 12,),
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value && controller.visibleArtists.isEmpty) {

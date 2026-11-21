@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/models/artist_profile_listing_model.dart';
 
