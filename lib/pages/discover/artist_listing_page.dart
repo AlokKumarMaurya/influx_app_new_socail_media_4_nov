@@ -49,8 +49,6 @@ class _ArtistListingPageState extends State<ArtistListingPage> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeading(),
-            _buildSearch(),
             _buildFilters(),
             Expanded(
               child: Obx(() {
