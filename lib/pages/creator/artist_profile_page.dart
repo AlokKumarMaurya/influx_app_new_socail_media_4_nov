@@ -3,7 +3,6 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../controllers/artist_profile_controller.dart';
 import '../../controllers/auth_controller.dart';
-import '../../utils/app_theme.dart';
 
 class ArtistProfilePage extends StatefulWidget {
   const ArtistProfilePage({super.key});
