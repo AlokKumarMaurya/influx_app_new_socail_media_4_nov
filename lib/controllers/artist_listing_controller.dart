@@ -45,7 +45,7 @@ class ArtistListingController extends GetxController {
     ArtistFilterOption(id: 'rating', name: 'Rating'),
   ];
 
-  static const List<ArtistProfileListingModel> _demoArtists = [
+  static final List<ArtistProfileListingModel> _demoArtists = [
     ArtistProfileListingModel(
       artistId: 101, userId: 501, artistName: 'Aarav Sharma',
       username: 'aarav_sharma', category: categories[0], industry: industries[0],
@@ -244,8 +244,8 @@ class ArtistListingController extends GetxController {
   }
 
   bool _matchesExperience(String value, String id) {
+    if (id == '1') return value.toLowerCase() == 'fresher';
     final requiredYears = switch (id) {
-      '1' => 0,
       '2' => 1,
       '3' => 3,
       '4' => 5,
