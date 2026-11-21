@@ -246,6 +246,25 @@ class _ArtistListingPageState extends State<ArtistListingPage> {
           icon: const Icon(Icons.keyboard_arrow_down, color: ArtistListingPage._green),
           isDense: true,
           style: const TextStyle(color: ArtistListingPage._green, fontSize: 13),
+          selectedItemBuilder: (context) => [
+            Text(
+              '$label : All',
+              style: const TextStyle(
+                color: ArtistListingPage._green,
+                fontSize: 13,
+              ),
+            ),
+            ...options.map(
+              (option) => Text(
+                '$label : ${option.name}',
+                style: const TextStyle(
+                  color: ArtistListingPage._green,
+                  fontSize: 13,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
           items: [
             DropdownMenuItem<String>(
               value: '',
