@@ -33,7 +33,7 @@ extensions.configure<ApplicationExtension> {
     signingConfigs {
         create("release") {
             // Play Store uploads must be signed with the app's private upload keystore.
-            storeFile = file(System.getenv("ANDROID_KEYSTORE_PATH") ?: "upload-keystore.jks")
+            storeFile = file(System.getenv("ANDROID_KEYSTORE_PATH") ?: "keystore.jks")
             storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: ""
             keyAlias = System.getenv("ANDROID_KEY_ALIAS") ?: ""
             keyPassword = System.getenv("ANDROID_KEY_PASSWORD") ?: ""
