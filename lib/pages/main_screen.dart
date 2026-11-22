@@ -13,9 +13,9 @@ import '../utils/app_theme.dart';
 import '../widgets/app_drawer.dart';
 import '../controllers/main_controller.dart';
 import 'feed/feed_page.dart';
-import 'discover/artist_listing_page.dart';
 import '../controllers/feed_controller.dart';
 import 'discover/discover_home_page.dart';
+// import 'discover/artist_listing_page.dart';
 import 'watch/watch_page.dart';
 import 'user/profile_page.dart';
 import 'user/friends_page.dart';
@@ -364,7 +364,8 @@ class MainScreen extends StatelessWidget {
       final List<Widget> pages = [
         FeedPage(onMenuTap: () => scaffoldKey.currentState?.openDrawer()),
         if (isWatchEnabled) const WatchPage(),
-        const ArtistListingPage(),
+        // Static artist discovery is temporarily disabled. Keep this code for later API integration.
+        // const ArtistListingPage(),
         if (isCreatorCampaignsEnabled)
           DiscoverHomePage(
             onMenuTap: () => scaffoldKey.currentState?.openDrawer(),
@@ -395,13 +396,14 @@ class MainScreen extends StatelessWidget {
               size: 24,
             ),
           ),
-        const Tab(
-          icon: HugeIcon(
-            icon: HugeIcons.strokeRoundedCamera01,
-            color: Colors.white,
-            size: 24,
-          ),
-        ),
+        // Static artist discovery tab is temporarily disabled.
+        // const Tab(
+        //   icon: HugeIcon(
+        //     icon: HugeIcons.strokeRoundedCamera01,
+        //     color: Colors.white,
+        //     size: 24,
+        //   ),
+        // ),
         if (isCreatorCampaignsEnabled)
           const Tab(
             icon: HugeIcon(

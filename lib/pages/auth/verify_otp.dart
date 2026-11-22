@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart' as flutter;
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -100,7 +101,7 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
             ),
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
-          body: Material(
+          body: flutter.Material(
             color: Theme.of(context).scaffoldBackgroundColor,
             child: Stack(
               children: [
@@ -140,7 +141,7 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
 
                           const SizedBox(height: 14),
 
-                          Material(
+                          flutter.Material(
                             color: Colors.transparent,
                             child: Pinput(
                               length: 6,
