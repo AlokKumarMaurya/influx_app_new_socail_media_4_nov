@@ -13,8 +13,12 @@ plugins {
 // Local builds read android/key.properties. CI builds can provide the same
 // values through GitHub Actions secrets/environment variables.
 val keystoreProperties = Properties()
-val keystorePropertiesFile = rootProject.file("key.properties")
-if (keystorePropertiesFile.exists()) {
+val keystorePropertiesFile = sequenceOf(
+    rootProject.file("key.properties"), // android/key.properties (recommended)
+    project.file("key.properties")      // android/app/key.properties (also supported)
+).firstOrNull { it.isFile }
+
+if (keystorePropertiesFile != null) {
     keystorePropertiesFile.inputStream().use(keystoreProperties::load)
 }
 
@@ -49,7 +53,7 @@ extensions.configure<ApplicationExtension> {
             // Environment variables take precedence for CI; local builds use key.properties.
             val configuredStoreFile = signingValue("ANDROID_KEYSTORE_PATH", "storeFile")
                 ?: throw GradleException(
-                    "Missing keystore path. Set ANDROID_KEYSTORE_PATH or storeFile in android/key.properties."
+                    "Missing keystore path. Set ANDROID_KEYSTORE_PATH or add storeFile=... to android/key.properties (or android/app/key.properties). Ensure the file is named exactly key.properties."
                 )
 
             storeFile = if (System.getenv("ANDROID_KEYSTORE_PATH").isNullOrBlank()) {
