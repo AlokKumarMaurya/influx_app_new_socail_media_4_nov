@@ -10,10 +10,9 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// Local builds read a properties file from android/ or android/app/.
-// Accept common Windows duplicate/extension variants to avoid silently missing
-// credentials when Explorer hides file extensions.
-val keystoreProperties = Properties()
+// Find the first usable signing properties file, not merely the first file
+// that exists. This avoids an empty/stale android/key.properties shadowing
+// the valid android/app/key.properties. Strip a UTF-8 BOM (common on Windows).
 val keystorePropertiesCandidates = listOf(
     rootProject.file("key.properties"),
     project.file("key.properties"),
@@ -24,11 +23,32 @@ val keystorePropertiesCandidates = listOf(
     rootProject.file("keystore.properties"),
     project.file("keystore.properties")
 )
-val keystorePropertiesFile = keystorePropertiesCandidates.firstOrNull { it.isFile }
 
-if (keystorePropertiesFile != null) {
-    keystorePropertiesFile.reader(Charsets.UTF_8).use(keystoreProperties::load)
-}
+val requiredSigningProperties = listOf(
+    "storePassword",
+    "keyPassword",
+    "keyAlias",
+    "storeFile"
+)
+
+val loadedSigningProperties = keystorePropertiesCandidates
+    .filter { it.isFile }
+    .mapNotNull { candidate ->
+        val candidateProperties = Properties()
+        val content = candidate.readText(Charsets.UTF_8).removePrefix("\uFEFF")
+        content.reader().use(candidateProperties::load)
+        if (requiredSigningProperties.all {
+                !candidateProperties.getProperty(it).isNullOrBlank()
+            }) {
+            candidate to candidateProperties
+        } else {
+            null
+        }
+    }
+    .firstOrNull()
+
+val keystorePropertiesFile = loadedSigningProperties?.first
+val keystoreProperties = loadedSigningProperties?.second ?: Properties()
 
 fun signingValue(environmentName: String, propertyName: String): String? =
     System.getenv(environmentName)?.trim()?.takeIf(String::isNotEmpty)
