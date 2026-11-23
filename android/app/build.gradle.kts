@@ -95,8 +95,15 @@ extensions.configure<ApplicationExtension> {
                     else rootProject.projectDir.parentFile.resolve(configuredFile)
                 }
                 !configuredStoreFile.isNullOrBlank() -> {
-                    // Local key.properties paths are relative to android/app.
-                    file(configuredStoreFile)
+                    // Accept paths relative to either android/app (keystore.jks)
+                    // or android (app/keystore.jks), avoiding duplicated app/app paths.
+                    val moduleRelative = project.file(configuredStoreFile)
+                    val androidRelative = rootProject.file(configuredStoreFile)
+                    when {
+                        moduleRelative.isFile -> moduleRelative
+                        androidRelative.isFile -> androidRelative
+                        else -> moduleRelative
+                    }
                 }
                 defaultLocalKeystore != null -> defaultLocalKeystore
                 else -> throw GradleException(
