@@ -10,21 +10,29 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// Local builds read android/key.properties. CI builds can provide the same
-// values through GitHub Actions secrets/environment variables.
+// Local builds read a properties file from android/ or android/app/.
+// Accept common Windows duplicate/extension variants to avoid silently missing
+// credentials when Explorer hides file extensions.
 val keystoreProperties = Properties()
-val keystorePropertiesFile = sequenceOf(
-    rootProject.file("key.properties"), // android/key.properties (recommended)
-    project.file("key.properties")      // android/app/key.properties (also supported)
-).firstOrNull { it.isFile }
+val keystorePropertiesCandidates = listOf(
+    rootProject.file("key.properties"),
+    project.file("key.properties"),
+    rootProject.file("key(1).properties"),
+    project.file("key(1).properties"),
+    rootProject.file("key.properties.txt"),
+    project.file("key.properties.txt"),
+    rootProject.file("keystore.properties"),
+    project.file("keystore.properties")
+)
+val keystorePropertiesFile = keystorePropertiesCandidates.firstOrNull { it.isFile }
 
 if (keystorePropertiesFile != null) {
-    keystorePropertiesFile.inputStream().use(keystoreProperties::load)
+    keystorePropertiesFile.reader(Charsets.UTF_8).use(keystoreProperties::load)
 }
 
 fun signingValue(environmentName: String, propertyName: String): String? =
-    System.getenv(environmentName)?.takeIf(String::isNotBlank)
-        ?: keystoreProperties.getProperty(propertyName)?.takeIf(String::isNotBlank)
+    System.getenv(environmentName)?.trim()?.takeIf(String::isNotEmpty)
+        ?: keystoreProperties.getProperty(propertyName)?.trim()?.takeIf(String::isNotEmpty)
 
 extensions.configure<ApplicationExtension> {
     namespace = "com.hme.company"
