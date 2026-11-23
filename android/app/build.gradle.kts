@@ -60,18 +60,29 @@ extensions.configure<ApplicationExtension> {
         create("release") {
             // Environment variables take precedence for CI; local builds use key.properties.
             val configuredStoreFile = signingValue("ANDROID_KEYSTORE_PATH", "storeFile")
-                ?: throw GradleException(
-                    "Missing keystore path. Set ANDROID_KEYSTORE_PATH or add storeFile=... to android/key.properties (or android/app/key.properties). Ensure the file is named exactly key.properties."
-                )
+            val defaultLocalKeystore = listOf(
+                project.file("keystore.jks"),
+                project.file("upload-keystore.jks"),
+                rootProject.file("app/keystore.jks"),
+                rootProject.file("app/upload-keystore.jks")
+            ).firstOrNull { it.isFile }
 
-            storeFile = if (System.getenv("ANDROID_KEYSTORE_PATH").isNullOrBlank()) {
-                // key.properties storeFile is relative to android/app.
-                file(configuredStoreFile)
-            } else {
-                // CI's ANDROID_KEYSTORE_PATH is relative to the repository root.
-                val configuredFile = File(configuredStoreFile)
-                if (configuredFile.isAbsolute) configuredFile
-                else rootProject.projectDir.parentFile.resolve(configuredFile)
+            storeFile = when {
+                !System.getenv("ANDROID_KEYSTORE_PATH").isNullOrBlank() -> {
+                    // CI's ANDROID_KEYSTORE_PATH is relative to the repository root.
+                    val configuredFile = File(configuredStoreFile!!)
+                    if (configuredFile.isAbsolute) configuredFile
+                    else rootProject.projectDir.parentFile.resolve(configuredFile)
+                }
+                !configuredStoreFile.isNullOrBlank() -> {
+                    // Local key.properties paths are relative to android/app.
+                    file(configuredStoreFile)
+                }
+                defaultLocalKeystore != null -> defaultLocalKeystore
+                else -> throw GradleException(
+                    "Release keystore not found. Checked android/app/keystore.jks and android/app/upload-keystore.jks. " +
+                        "Set storeFile in key.properties or ANDROID_KEYSTORE_PATH."
+                )
             }
 
             storePassword = signingValue("ANDROID_KEYSTORE_PASSWORD", "storePassword")
@@ -89,6 +100,14 @@ extensions.configure<ApplicationExtension> {
 
             if (!storeFile!!.isFile) {
                 throw GradleException("Release keystore not found: ${storeFile!!.absolutePath}")
+            }
+            if (keystorePropertiesFile == null &&
+                System.getenv("ANDROID_KEYSTORE_PASSWORD").isNullOrBlank()) {
+                throw GradleException(
+                    "No signing properties file was loaded. Checked android/key.properties, android/app/key.properties, " +
+                        "key(1).properties, key.properties.txt and keystore.properties. " +
+                        "Create android/key.properties with storePassword, keyPassword, keyAlias and storeFile."
+                )
             }
         }
     }
