@@ -1,5 +1,7 @@
 import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.File
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -7,6 +9,50 @@ plugins {
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+// Find the first usable signing properties file, not merely the first file
+// that exists. This avoids an empty/stale android/key.properties shadowing
+// the valid android/app/key.properties. Strip a UTF-8 BOM (common on Windows).
+val keystorePropertiesCandidates = listOf(
+    rootProject.file("key.properties"),
+    project.file("key.properties"),
+    rootProject.file("key(1).properties"),
+    project.file("key(1).properties"),
+    rootProject.file("key.properties.txt"),
+    project.file("key.properties.txt"),
+    rootProject.file("keystore.properties"),
+    project.file("keystore.properties")
+)
+
+val requiredSigningProperties = listOf(
+    "storePassword",
+    "keyPassword",
+    "keyAlias",
+    "storeFile"
+)
+
+val loadedSigningProperties = keystorePropertiesCandidates
+    .filter { it.isFile }
+    .mapNotNull { candidate ->
+        val candidateProperties = Properties()
+        val content = candidate.readText(Charsets.UTF_8).removePrefix("\uFEFF")
+        content.reader().use(candidateProperties::load)
+        if (requiredSigningProperties.all {
+                !candidateProperties.getProperty(it).isNullOrBlank()
+            }) {
+            candidate to candidateProperties
+        } else {
+            null
+        }
+    }
+    .firstOrNull()
+
+val keystorePropertiesFile = loadedSigningProperties?.first
+val keystoreProperties = loadedSigningProperties?.second ?: Properties()
+
+fun signingValue(environmentName: String, propertyName: String): String? =
+    System.getenv(environmentName)?.trim()?.takeIf(String::isNotEmpty)
+        ?: keystoreProperties.getProperty(propertyName)?.trim()?.takeIf(String::isNotEmpty)
 
 extensions.configure<ApplicationExtension> {
     namespace = "com.hme.company"
@@ -32,11 +78,64 @@ extensions.configure<ApplicationExtension> {
 
     signingConfigs {
         create("release") {
-            // Play Store uploads must be signed with the app's private upload keystore.
-            storeFile = file(System.getenv("ANDROID_KEYSTORE_PATH") ?: "upload-keystore.jks")
-            storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: ""
-            keyAlias = System.getenv("ANDROID_KEY_ALIAS") ?: ""
-            keyPassword = System.getenv("ANDROID_KEY_PASSWORD") ?: ""
+            // Environment variables take precedence for CI; local builds use key.properties.
+            val configuredStoreFile = signingValue("ANDROID_KEYSTORE_PATH", "storeFile")
+            val defaultLocalKeystore = listOf(
+                project.file("keystore.jks"),
+                project.file("upload-keystore.jks"),
+                rootProject.file("app/keystore.jks"),
+                rootProject.file("app/upload-keystore.jks")
+            ).firstOrNull { it.isFile }
+
+            storeFile = when {
+                !System.getenv("ANDROID_KEYSTORE_PATH").isNullOrBlank() -> {
+                    // CI's ANDROID_KEYSTORE_PATH is relative to the repository root.
+                    val configuredFile = File(configuredStoreFile!!)
+                    if (configuredFile.isAbsolute) configuredFile
+                    else rootProject.projectDir.parentFile.resolve(configuredFile)
+                }
+                !configuredStoreFile.isNullOrBlank() -> {
+                    // Accept paths relative to either android/app (keystore.jks)
+                    // or android (app/keystore.jks), avoiding duplicated app/app paths.
+                    val moduleRelative = project.file(configuredStoreFile)
+                    val androidRelative = rootProject.file(configuredStoreFile)
+                    when {
+                        moduleRelative.isFile -> moduleRelative
+                        androidRelative.isFile -> androidRelative
+                        else -> moduleRelative
+                    }
+                }
+                defaultLocalKeystore != null -> defaultLocalKeystore
+                else -> throw GradleException(
+                    "Release keystore not found. Checked android/app/keystore.jks and android/app/upload-keystore.jks. " +
+                        "Set storeFile in key.properties or ANDROID_KEYSTORE_PATH."
+                )
+            }
+
+            storePassword = signingValue("ANDROID_KEYSTORE_PASSWORD", "storePassword")
+                ?: throw GradleException(
+                    "Missing keystore password. Set ANDROID_KEYSTORE_PASSWORD or storePassword in android/key.properties."
+                )
+            keyAlias = signingValue("ANDROID_KEY_ALIAS", "keyAlias")
+                ?: throw GradleException(
+                    "Missing key alias. Set ANDROID_KEY_ALIAS or keyAlias in android/key.properties."
+                )
+            keyPassword = signingValue("ANDROID_KEY_PASSWORD", "keyPassword")
+                ?: throw GradleException(
+                    "Missing private-key password. Set ANDROID_KEY_PASSWORD or keyPassword in android/key.properties."
+                )
+
+            if (!storeFile!!.isFile) {
+                throw GradleException("Release keystore not found: ${storeFile!!.absolutePath}")
+            }
+            if (keystorePropertiesFile == null &&
+                System.getenv("ANDROID_KEYSTORE_PASSWORD").isNullOrBlank()) {
+                throw GradleException(
+                    "No signing properties file was loaded. Checked android/key.properties, android/app/key.properties, " +
+                        "key(1).properties, key.properties.txt and keystore.properties. " +
+                        "Create android/key.properties with storePassword, keyPassword, keyAlias and storeFile."
+                )
+            }
         }
     }
 
